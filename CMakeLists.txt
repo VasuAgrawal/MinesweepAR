@@ -41,7 +41,7 @@ else()
 endif()
 
 set(CMAKE_C_FLAGS "-Wall -g")
-set(CMAKE_CXX_FLAGS "-Wall -g")
+set(CMAKE_CXX_FLAGS "--std=gnu++11 -Wall -g")
 
 if (APPLE OR UNIX)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wsign-compare -frounding-math")
