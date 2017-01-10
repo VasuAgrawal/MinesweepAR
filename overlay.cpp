@@ -1,5 +1,3 @@
-#include "TagDetector.h"
-
 #include <sys/time.h>
 #include <iostream>
 #include <stdio.h>
@@ -11,7 +9,8 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "CameraUtil.h"
+#include "apriltags/CameraUtil.h"
+#include "apriltags/TagDetector.h"
 
 enum Tile {
   ONE = 1,
@@ -59,7 +58,7 @@ void load_tiles() {
   tile_mask = cv::Mat(tile_images[BLANK].size(), CV_8U, cv::Scalar(255));
 }
 
-void processs_detections(const TagDetectionArray& detections, 
+void processs_detections(const TagDetectionArray& detections,
     const cv::Point2d opticalCenter, cv::Mat* frame) {
   static double s = .1540; // tag size in meters
   static double ss = 1.5 * s; // half tag size in meters
@@ -93,11 +92,11 @@ void processs_detections(const TagDetectionArray& detections,
     if (!detection.good) continue;
     cv::Mat r, t; // Rotation and translation matrices
     CameraUtil::homographyToPoseCV(f, f, s, detection.homography, r, t);
-      
+
     // From the homography that was calculated earlier, figure out the four
     // corners of the tile.
     cv::projectPoints(corners, r, t, K, distCoeffs, frame_points);
-      
+
     cv::Mat H = cv::findHomography(tile_points, frame_points, 0);
 
     cv::Mat tile_warped;

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+g++ -o overlay -std=gnu++11 overlay.cpp \
+    -lapriltags \
+    -lopencv_highgui -lopencv_core -lopencv_imgcodecs -lopencv_imgproc \
+    -lopencv_videoio -lopencv_calib3d
