@@ -13,7 +13,7 @@ To build this code, please do the following.
 
 Roughly speaking, it should look something like this:
 
-'''
+```
 $ git clone https://github.com/VasuAgrawal/apriltags-cpp.git
 $ cd apriltags-cpp
 $ mkdir build && cd build
