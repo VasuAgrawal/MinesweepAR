@@ -7,12 +7,15 @@ public class ServerMain {
     private static final String TAG = "ServerMain";
 
     private static final String JSON_TYPE_FIELD = "type";
+    private static final String JSON_PAYLOAD_FIELD = "payload";
 
     enum ConnectionType {
         RESTART, MARK, KEY_PRESS, GAME_STATE
     };
 
     private final int port;
+    private List<BufferedWriter> listeners = new ArrayList<BufferedWriter>();
+    private Minesweeper game = new Minesweeper();
 
     public ServerMain(int port) {
         this.port = port;
@@ -42,7 +45,7 @@ public class ServerMain {
                 try {
                     // TODO: Offload this into a new thread
                     handleClient(clientSocket);
-                } catch(IOException e) {
+                } catch(Exception e) {
                     Log.e(TAG, "Error handling connection", e);
                     try {
                         clientSocket.close();
@@ -66,79 +69,119 @@ public class ServerMain {
 
     }
 
+    public void handleClient(Socket clientSocket) {
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String content = br.readLine();
+
+        JSONObject jObject = null;
+
+        try {
+            jObject = new JSONObject(content);
+        } catch(JSONException e) {
+            Log.e(TAG, "Couldn't read JSON object from client", e);
+            return;
+        }
+
+        ConnectionType type = null;
+        try {
+            String rawType = jObject.getString(JSON_TYPE_FIELD);
+            type = ConnectionType.valueOf(rawType);
+
+            if(type == NULL) {
+                throw new Exception("Invalid type " + rawType);
+            }
+        } catch(Exception e) {
+            Log.e(TAG, "Invalid type field", e);
+            return;
+        }
+
+        String payloadString = NULL;
+
+        try {
+            payloadString = jObject.getString(JSON_PAYLOAD_FIELD);
+        } catch(Exception e) {
+            Log.i(TAG, "No payload for type: " + type, e);
+        }
+
+        switch(type) {
+            case RESTART:
+                handleGameRestart();
+                break;
+            case MARK:
+                handleTileMark(payloadString);
+                break;
+            case KEY_PRESS:
+                handleKeyPress(payloadString);
+                break;
+            case GAME_STATE:
+                addGameStateListener(clientSocket);
+                return;
+            default:
+                Log.e(TAG, "Missing case for type: " + type);
+        }
+
+        try {
+            clientSocket.close();
+        } catch(IOException e) {
+            Log.e(TAG, "Couldn't close client socket", e);
+        }
+
+    }
+
     public void handleGameRestart() {
         // TODO: Implement
     }
 
     public void handleTileMark(String payload) {
-        // TODO: Implement
+
+        int[] location = symbol.split(":");
+
+        game.pressMine(location[0], location[1]);
+
+        updateListeners(String.format("Marked mine at location (%d, %d)!", location[0], location[1]));
+
     }
 
     public void handleKeyPress(String symbol) {
-        // TODO: Implement
+
+
+        game.pressMine(location[0], location[1]);
+
+        updateListeners(String.format("Marked mine at location (%d, %d)!", location[0], location[1]));
     }
 
     public void addGameStateListener(Socket clientSocket) {
-        // TODO: Implement
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+        listeners.add(out);
     }
 
+    public void updateListeners(String cause) {
 
+        JsonArrayBuilder boardBuilder = Json.createArrayBuilder();
 
+        for(char c: game.getBoard()) {
+            boardBuilder.add(c);
+        }
 
-    public void handleClient(Socket clientSocket) {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            final String content = br.readLine();
+        JsonObject state = Json.createObjectBuilder().add("cause", cause)
+            .add("time", game.getTime())
+            .add("board", boardBuilder.build())
+            .add("mineCount", game.getMineCount())
+            .add("status", game.getStatus().toString()).build();
 
-            JSONObject jObject = null;
+        String jsonString = state.toString();
 
+        List<BufferedWriter> listenerList = new ArrayList<>(listeners);
+        for(BufferedWriter out: listenerList) {
             try {
-                jObject = new JSONObject(content);
-            } catch(JSONException e) {
-                Log.e(TAG, "Couldn't read JSON object from client", e);
-                return;
+                out.write(jsonString);
+                out.flush();
+            } catch(IOException e) {
+                Log.e(TAG, "Couldn't write to listener", e);
+                listeners.remove(out);
             }
-
-            ConnectionType type = null;
-            try {
-                String rawType = jObject.getString(JSON_TYPE_FIELD);
-                type = ConnectionType.valueOf(rawType);
-
-                if(type == NULL) {
-                    throw new Exception("Invalid type " + rawType);
-                }
-            } catch(Exception e) {
-                Log.e(TAG, "Invalid type field", e);
-                return;
-            }
-
-            switch(type) {
-                case RESTART:
-
-            }
-
-
-
-
-
-
-
-
-
-
-
-
         }
     }
-
-
-
-    public void setupServer() {
-
-    }
-
-
-
-
 
 }
