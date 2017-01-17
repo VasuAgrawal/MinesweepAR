@@ -23,10 +23,29 @@ void setup(){
   Serial.begin(115200);
 }
 
+// Return 1 if no key detected, 0 if detected.
+int decode_key(char key, byte* row_num, byte* col_num) {
+  if (key == NO_KEY) return 1;
+
+  for (int row = 0; row < ROWS; ++row) {
+    for (int col = 0; col < COLS; ++col) {
+      if (keys[row][col] == key) {
+        *row_num = row;
+        *col_num = col;
+        return 0;
+      }
+    }
+  }
+}
+
 void loop(){
   char key = keypad.getKey();
 
-  if (key != NO_KEY){
-    Serial.print(key);
-  }
+  byte row_num;
+  byte col_num;
+
+  if (decode_key(key, &row_num, &col_num)) return;
+
+  Serial.print(row_num);
+  Serial.print(col_num);
 }
