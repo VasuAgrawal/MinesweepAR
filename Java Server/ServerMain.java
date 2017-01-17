@@ -69,6 +69,8 @@ public class ServerMain {
         while(true) {
             try {
                 Socket clientSocket = serverSocket.accept();
+                
+                Log.i(TAG, "Connected to client " + clientSocket.toString());
 
                 try {
                     // TODO: Offload this into a new thread
@@ -101,6 +103,8 @@ public class ServerMain {
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String content = bufferedReader.readLine();
+        
+        Log.i(TAG, "Received Socket Payload: " + content);
 
         JSONObject jObject = null;
 
