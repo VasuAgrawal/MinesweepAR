@@ -20,7 +20,7 @@ byte colPins[COLS] = {22, 23, 24, 25, 26, 27 ,28, 29, 30}; //connect to the colu
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop(){
