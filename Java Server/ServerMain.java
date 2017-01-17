@@ -24,8 +24,6 @@ public class ServerMain {
     private static final String JSON_TYPE_FIELD = "type";
     private static final String JSON_PAYLOAD_FIELD = "payload";
 
-    private static final int BOARD_SIZE = 9;
-
     private static final char[][] KEY_MAPPING = {
       {'A', 'J', 'S', 'b', 'k', 't', '2', '!', ')'},
       {'B', 'K', 'T', 'c', 'l', 'u', '3', '@', '-'},
@@ -183,15 +181,15 @@ public class ServerMain {
 
         int row = -1; 
         int column = -1;
-        rowLoop: for(row = 0; row < BOARD_SIZE; row++) {
-            for(column = 0; column < BOARD_SIZE; column++) {
+        rowLoop: for(row = 0; row < Minesweeper.BOARD_SIZE; row++) {
+            for(column = 0; column < Minesweeper.BOARD_SIZE; column++) {
                 if(KEY_MAPPING[row][column] == c) {
                     break rowLoop;
                 }
             }
         }
 
-        if(row == BOARD_SIZE && column == BOARD_SIZE) {
+        if(row == Minesweeper.BOARD_SIZE && column == Minesweeper.BOARD_SIZE) {
             Log.e(TAG, "Invalid symbol: " + symbol);
             return;
         }
