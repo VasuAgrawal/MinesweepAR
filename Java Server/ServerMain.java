@@ -1,5 +1,20 @@
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class ServerMain {
 
@@ -8,6 +23,21 @@ public class ServerMain {
 
     private static final String JSON_TYPE_FIELD = "type";
     private static final String JSON_PAYLOAD_FIELD = "payload";
+
+    private static final int BOARD_SIZE = 9;
+
+    private static final char[][] KEY_MAPPING = {
+      {'A', 'J', 'S', 'b', 'k', 't', '2', '!', ')'},
+      {'B', 'K', 'T', 'c', 'l', 'u', '3', '@', '-'},
+      {'C', 'L', 'U', 'd', 'm', 'v', '4', '#', '_'},
+      {'D', 'M', 'V', 'e', 'n', 'w', '5', '$', '='},
+      {'E', 'N', 'W', 'f', 'o', 'x', '6', '%', '+'},
+      {'F', 'O', 'X', 'g', 'p', 'y', '7', '^', ','},
+      {'G', 'P', 'Y', 'h', 'q', 'z', '8', '&', '<'},
+      {'H', 'Q', 'Z', 'i', 'r', '0', '9', '*', '.'},
+      {'I', 'R', 'a', 'j', 's', '1', ' ', '(', '>'}
+    };
+
 
     enum ConnectionType {
         RESTART, MARK, KEY_PRESS, GAME_STATE
@@ -69,10 +99,10 @@ public class ServerMain {
 
     }
 
-    public void handleClient(Socket clientSocket) {
+    public void handleClient(Socket clientSocket) throws IOException {
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String content = br.readLine();
+        String content = bufferedReader.readLine();
 
         JSONObject jObject = null;
 
@@ -88,7 +118,7 @@ public class ServerMain {
             String rawType = jObject.getString(JSON_TYPE_FIELD);
             type = ConnectionType.valueOf(rawType);
 
-            if(type == NULL) {
+            if(type == null) {
                 throw new Exception("Invalid type " + rawType);
             }
         } catch(Exception e) {
@@ -96,12 +126,12 @@ public class ServerMain {
             return;
         }
 
-        String payloadString = NULL;
+        String payloadString = null;
 
         try {
             payloadString = jObject.getString(JSON_PAYLOAD_FIELD);
         } catch(Exception e) {
-            Log.i(TAG, "No payload for type: " + type, e);
+            Log.e(TAG, "No payload for type: " + type, e);
         }
 
         switch(type) {
@@ -130,48 +160,77 @@ public class ServerMain {
     }
 
     public void handleGameRestart() {
-        // TODO: Implement
+        game = new Minesweeper();
+        updateListeners("New Game Started!");
     }
 
     public void handleTileMark(String payload) {
 
-        int[] location = symbol.split(":");
+    	String[] location = payload.split(":");
+    	
+    	int row = Integer.parseInt(location[0]);
+    	int column = Integer.parseInt(location[1]);
 
-        game.pressMine(location[0], location[1]);
+        game.markMine(row, column);
 
-        updateListeners(String.format("Marked mine at location (%d, %d)!", location[0], location[1]));
+        updateListeners(String.format("Marked mine at location (%d, %d)!", row, column));
 
     }
 
     public void handleKeyPress(String symbol) {
 
+        char c = symbol.charAt(0);
 
-        game.pressMine(location[0], location[1]);
+        int row = -1; 
+        int column = -1;
+        rowLoop: for(row = 0; row < BOARD_SIZE; row++) {
+            for(column = 0; column < BOARD_SIZE; column++) {
+                if(KEY_MAPPING[row][column] == c) {
+                    break rowLoop;
+                }
+            }
+        }
 
-        updateListeners(String.format("Marked mine at location (%d, %d)!", location[0], location[1]));
+        if(row == BOARD_SIZE && column == BOARD_SIZE) {
+            Log.e(TAG, "Invalid symbol: " + symbol);
+            return;
+        }
+
+        Log.i(TAG, String.format("Key press detected %s -> (%d, %d)", symbol, row, column));
+
+        game.pressMine(row, column);
+
+        updateListeners(String.format("Stepped on mine at location (%d, %d)!", row, column));
     }
 
     public void addGameStateListener(Socket clientSocket) {
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-        listeners.add(out);
+		try {
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+			listeners.add(out);
+		} catch (IOException e) {
+			Log.e(TAG, "Couldn't create a buffered writer for socket", e);
+		}
     }
 
     public void updateListeners(String cause) {
 
-        JsonArrayBuilder boardBuilder = Json.createArrayBuilder();
+    	String jsonString = null;
+    	try {
+    		JSONArray array = new JSONArray(game.getBoard());
+    		  
+        	
+            JSONObject state = new JSONObject().put("cause", cause)
+                .put("time", game.getTime())
+                .put("board", array)
+                .put("mineCount", game.getMineCount())
+                .put("status", game.getStatus().toString());
 
-        for(char c: game.getBoard()) {
-            boardBuilder.add(c);
-        }
-
-        JsonObject state = Json.createObjectBuilder().add("cause", cause)
-            .add("time", game.getTime())
-            .add("board", boardBuilder.build())
-            .add("mineCount", game.getMineCount())
-            .add("status", game.getStatus().toString()).build();
-
-        String jsonString = state.toString();
-
+            jsonString = state.toString();
+    	} catch(JSONException e) {
+    		Log.e(TAG,  "Failed to build JSON Object", e);
+    		return;
+    	}
+    	
         List<BufferedWriter> listenerList = new ArrayList<>(listeners);
         for(BufferedWriter out: listenerList) {
             try {

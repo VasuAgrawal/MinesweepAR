@@ -1,5 +1,3 @@
-package edu.cmu.cs.cs214.hw6.util;
-
 /**
  * A simple utility class for logging.
  *
