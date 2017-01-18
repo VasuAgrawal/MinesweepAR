@@ -118,10 +118,17 @@ public class Minesweeper {
     	if(0 <= row && row < BOARD_SIZE && 0 <= column && column < BOARD_SIZE 
     			&& this.state == State.IN_GAME) {
     		int index = getIndex(row, column);
+    		
+    		if(this.visibleBoard[index] != SpaceSymbol.BLANK.getSymbol()) {
+    			return;
+    		}
+    		
     		char mapValue = this.map[index];
     		
     		this.visibleBoard[index] = mapValue;
     		this.hiddenSpaces--;
+    		
+    		Log.i(TAG, "Opening Cell " + prettyLocation(index));
     	
     		if(mapValue == SpaceSymbol.MINE.getSymbol()) {
     			
