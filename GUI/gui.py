@@ -6,7 +6,8 @@ import pprint
 
 WIDTH = 450
 HEIGHT = 450
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+BOTTOM = HEIGHT // 3
+screen = pygame.display.set_mode((WIDTH, HEIGHT + BOTTOM))
 pygame.init()
 font = pygame.font.SysFont("Times New Roman", 15)
 
@@ -45,9 +46,22 @@ def draw_board(game_state):
     full_color = pygame.Color(255, 255, 0, 255)
     blank_color = pygame.Color(0, 0, 255, 255)
 
+    time = game_state['time']
+    mineCount = game_state['mineCount']
+
+    textFont = pygame.font.SysFont("arial", 30)
+    timeText = textFont.render("Time: %d Min %d Sec" % (time // 60, time % 60), True, (150,150,150))
+    countText = textFont.render("Mine Count: %d" % mineCount, True, (150,150,150))
+    
+    timeSize = textFont.size("Time: %d Min %d Sec" % (time // 60, time % 60))
+    countSize = textFont.size("Mine Count: %d" % mineCount)
+
+    screen.blit(timeText, ((WIDTH - timeSize[0]) // 2, (BOTTOM - 1.9 * timeSize[1]) // 2))
+    screen.blit(countText, ((WIDTH - countSize[0]) // 2, (BOTTOM - 0.1 * countSize[1]) // 2))
+
     for row in range(ROWS):
         for col in range(COLS):
-            rect = pygame.Rect(col * COL_WIDTH, row * ROW_HEIGHT,
+            rect = pygame.Rect(col * COL_WIDTH, row * ROW_HEIGHT + BOTTOM,
                     COL_WIDTH, ROW_HEIGHT)
             screen.fill(full_color, rect)
 
