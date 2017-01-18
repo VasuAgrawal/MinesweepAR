@@ -23,7 +23,7 @@ def main():
                 out = dict()
                 out['type'] = 'KEY_PRESS'
                 out['payload'] = "%d:%d" % (int(row), int(col))
-                payload = json.dumps(out)
+                payload = json.dumps(out) + "\n"
             
                 s.send(payload.encode('ascii'))
                 print(payload)
