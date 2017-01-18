@@ -32,13 +32,13 @@ public class MainActivity extends Activity {
      * PRIVATE VARIABLES
      */
 
-    private TextureView previewView;
+    private TextureView mTextureView;
 
     /*
      * PRIVATE CALLBACKS
      */
 
-    private TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
+    private TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture,
                                               int width, int height) {
@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    private CameraDevice.StateCallback cameraDeviceCallback = new CameraDevice.StateCallback() {
+    private CameraDevice.StateCallback mCameraDeviceCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice cameraDevice) {
             previewCamera(cameraDevice);
@@ -117,15 +117,14 @@ public class MainActivity extends Activity {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             String cameraID = manager.getCameraIdList()[0];
-            manager.openCamera(cameraID, cameraDeviceCallback, null);
+            manager.openCamera(cameraID, mCameraDeviceCallback, null);
         } catch (CameraAccessException e) {
             Toast.makeText(this, "Cannot access the camera.", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void previewCamera(CameraDevice cameraDevice) {
-        TextureView previewView = (TextureView)findViewById(R.id.preview_view);
-        SurfaceTexture previewTexture = previewView.getSurfaceTexture();
+        SurfaceTexture previewTexture = mTextureView.getSurfaceTexture();
         Surface previewSurface = new Surface(previewTexture);
 
         final CaptureRequest.Builder previewBuilder;
@@ -167,8 +166,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        previewView = (TextureView) findViewById(R.id.preview_view);
-        previewView.setSurfaceTextureListener(surfaceTextureListener);
+        mTextureView = (TextureView) findViewById(R.id.preview_view);
+        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
     }
 
 }
