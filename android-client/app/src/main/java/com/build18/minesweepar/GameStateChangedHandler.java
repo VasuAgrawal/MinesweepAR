@@ -5,4 +5,5 @@ package com.build18.minesweepar;
  */
 
 public interface GameStateChangedHandler {
+    void gameStateChanged(GameState newGameState);
 }

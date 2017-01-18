@@ -43,6 +43,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture,
                                               int width, int height) {
+            Log.d(TAG, "Surface Texture Available");
             startCamera();
         }
 
@@ -159,11 +160,22 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         }
     }
 
-    private void gameStateChanged(GameState newGameState) {
-        // TODO: Write code here to access the game state and update the UI fields
+    public void gameStateChanged(GameState newGameState) {
+        // Write code here to access the game state and update the UI fields
+
+        // TODO: Do the background computation here
+        Log.d(TAG, "Doing background computation for update");
+
+        // Draw on the UI Thread in here
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Log.d(TAG, "Running on UI Thread");
+                // TODO: Do the drawing stuff here
+            }
+        });
 
         // Alternatively access fields from the cached game state in other parts of the program like
-        // GameState latestGameState = gameStateManager.getGameState();
+        // GameState latestGameState = gameStateManager.getLatestGameState();
         // String latestCause = latestGameState.getCause();
         // int secondsEllapsed = latestGameState.getSecondsEllapsed();
         // char symbol = latestGameState.getSymbolAtLocation(0, 3); // Get the character on the board at location 0,3
@@ -185,6 +197,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         mTextureView = (TextureView) findViewById(R.id.preview_view);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
 
+        Log.i(TAG, "onCreate Calling game State manager");
         gameStateManager = new GameStateManager(this);
     }
 
