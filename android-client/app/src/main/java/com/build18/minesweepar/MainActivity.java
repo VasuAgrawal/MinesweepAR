@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements GameStateChangedHandler {
 
     /*
      * PRIVATE CONSTANTS
@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
      */
 
     private TextureView mTextureView;
+    private GameStateManager gameStateManager;
 
     /*
      * PRIVATE CALLBACKS
@@ -69,13 +70,13 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDisconnected(CameraDevice cameraDevice) {
-            Log.d("TAG", "Camera disconnected.");
+            Log.d(TAG, "Camera disconnected.");
             cameraDevice.close();
         }
 
         @Override
         public void onError(CameraDevice cameraDevice, int error) {
-            Log.d("TAG", "Camera errored.");
+            Log.d(TAG, "Camera errored.");
             cameraDevice.close();
         }
     };
@@ -131,7 +132,7 @@ public class MainActivity extends Activity {
         try {
             previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
         } catch (CameraAccessException e) {
-            Log.d("TAG", "Could not create capture request.");
+            Log.d(TAG, "Could not create capture request.");
             return;
         }
         previewBuilder.addTarget(previewSurface);
@@ -143,20 +144,35 @@ public class MainActivity extends Activity {
                     try {
                         cameraCaptureSession.setRepeatingRequest(previewBuilder.build(), null, null);
                     } catch (CameraAccessException e) {
-                        Log.d("TAG", "Could not set repeating request for frames.");
+                        Log.d(TAG, "Could not set repeating request for frames.");
                         return;
                     }
                 }
 
                 @Override
                 public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-                    Log.d("TAG", "Configuring camera failed.");
+                    Log.d(TAG, "Configuring camera failed.");
                 }
             }, null);
         } catch (CameraAccessException e) {
-            Log.d("TAG", "Could not create capture session.");
+            Log.d(TAG, "Could not create capture session.");
         }
     }
+
+    private void gameStateChanged(GameState newGameState) {
+        // TODO: Write code here to access the game state and update the UI fields
+
+        // Alternatively access fields from the cached game state in other parts of the program like
+        // GameState latestGameState = gameStateManager.getGameState();
+        // String latestCause = latestGameState.getCause();
+        // int secondsEllapsed = latestGameState.getSecondsEllapsed();
+        // char symbol = latestGameState.getSymbolAtLocation(0, 3); // Get the character on the board at location 0,3
+        // int mineCount = latestGameState.getMineCount();
+        // GameStatus status = latestGameState.getStatus(); // GameState.GameStatus.IN_GAME (or WIN or LOSS)
+        // int boardSize = latestGameState.boardSize(); // Should always be 9
+
+    }
+
 
     /*
      * LIFECYCLE
@@ -168,6 +184,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         mTextureView = (TextureView) findViewById(R.id.preview_view);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+
+        gameStateManager = new GameStateManager(this);
     }
 
 }
