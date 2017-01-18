@@ -151,11 +151,22 @@ public class GameStateManager {
     }
 
     public void toggleMark(int row, int column) {
-        // TODO:
+        Socket commandSocket = sendRequest(createRequest(ConnectionType.MARK, row + ":" + column));
+        try {
+            commandSocket.close();
+        } catch(IOException e) {
+            Log.e(TAG, "Failed to close command socket", e);
+        }
+
     }
 
     public void restartGame() {
-
+        Socket commandSocket = sendRequest(createRequest(ConnectionType.RESTART, ""));
+        try {
+            commandSocket.close();
+        } catch(IOException e) {
+            Log.e(TAG, "Failed to close command socket", e);
+        }
     }
 
 }
