@@ -183,6 +183,9 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         // GameStatus status = latestGameState.getStatus(); // GameState.GameStatus.IN_GAME (or WIN or LOSS)
         // int boardSize = latestGameState.boardSize(); // Should always be 9
 
+        // To interact with the server:
+        // gameStateManager.toggleMark(row, column);
+        // gameStateManager.restartGame();
     }
 
 
@@ -197,7 +200,16 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         mTextureView = (TextureView) findViewById(R.id.preview_view);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
 
-        Log.i(TAG, "onCreate Calling game State manager");
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // TODO: This needs to be called when the app launches, but I'm not sure this is the
+        // right place for it....
+        Log.i(TAG, "onStart Calling game State manager");
         gameStateManager = new GameStateManager(this);
     }
 

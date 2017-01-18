@@ -89,6 +89,24 @@ public class GameStateManager {
     private void updateGameState(String update) {
 
         GameState newGameState = null;
+        try {
+            JSONObject state = new JSONObject(update);
+            String cause = state.getString("cause");
+            int time = state.getInt("time");
+            JSONArray jsonBoard = state.getJSONArray("board");
+            char[] board = new char[jsonBoard.length()];
+            for(int index = 0; index < jsonBoard.length(); index++) {
+                board[index] = jsonBoard.getString(index).charAt(0);
+            }
+            int mineCount = state.getInt("mineCount");
+            String stringStatus = state.getString("status");
+
+            newGameState = new GameState(cause, time, board, mineCount, stringStatus);
+
+        } catch(JSONException e) {
+            Log.e(TAG, "Error reading update payload: " + update, e);
+            return;
+        }
 
         setGameState(newGameState);
     }
@@ -131,4 +149,13 @@ public class GameStateManager {
             }
         }).start();
     }
+
+    public void toggleMark(int row, int column) {
+        // TODO:
+    }
+
+    public void restartGame() {
+
+    }
+
 }
