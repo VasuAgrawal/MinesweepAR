@@ -226,13 +226,13 @@ public class Minesweeper {
     				for(int deltaCol = -1; deltaCol <= 1; deltaCol++) {
     					int neighborRow = row + deltaRow;
     					int neighborCol = column + deltaCol;
+                        
+                        if(neighborRow < 0 || neighborRow >= BOARD_SIZE || neighborCol < 0 || neighborCol >= BOARD_SIZE) {
+                            continue;
+                        }
     					
     					int neighborIndex = getIndex(neighborRow, neighborCol);
     						
-    					if(neighborIndex < 0 || neighborIndex >= MAX_INDEX) {
-    						continue;
-    					}
-    					
     					if(this.map[neighborIndex] == SpaceSymbol.MINE.getSymbol()) {
     						Log.i(TAG, "Adjacent Mine Detected");
     					} else {
