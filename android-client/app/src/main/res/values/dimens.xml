@@ -2,4 +2,9 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Margin between an overlay and the sides of the screen -->
+    <dimen name="overlay_side_margin">20dp</dimen>
+    <!-- Margin between two overlays -->
+    <dimen name="overlay_margin">10dp</dimen>
 </resources>
