@@ -101,6 +101,7 @@ public class ServerMain {
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String content = bufferedReader.readLine();
+        System.out.println(content);
 
         JSONObject jObject = null;
 
@@ -175,30 +176,20 @@ public class ServerMain {
 
     }
 
-    public void handleKeyPress(String symbol) {
-
-        char c = symbol.charAt(0);
-
-        int row = -1; 
-        int column = -1;
-        rowLoop: for(row = 0; row < Minesweeper.BOARD_SIZE; row++) {
-            for(column = 0; column < Minesweeper.BOARD_SIZE; column++) {
-                if(KEY_MAPPING[row][column] == c) {
-                    break rowLoop;
-                }
-            }
-        }
-
-        if(row == Minesweeper.BOARD_SIZE && column == Minesweeper.BOARD_SIZE) {
-            Log.e(TAG, "Invalid symbol: " + symbol);
+    public void handleKeyPress(String rowcol) {
+    	String[] split = rowcol.split(":");
+    	int row = Integer.parseInt(split[0]);
+    	int col = Integer.parseInt(split[1]);
+    	
+        if(row >= Minesweeper.BOARD_SIZE || row < 0 ||
+           col >= Minesweeper.BOARD_SIZE || col < 0) {
+            Log.e(TAG, "Invalid row / col: " + rowcol);
             return;
         }
 
-        Log.i(TAG, String.format("Key press detected %s -> (%d, %d)", symbol, row, column));
-
-        game.pressMine(row, column);
-
-        updateListeners(String.format("Stepped on mine at location (%d, %d)!", row, column));
+        Log.i(TAG, String.format("Key press detected at (%d, %d)", row, col));
+        game.pressMine(row, col);
+        updateListeners(String.format("Stepped on mine at location (%d, %d)!", row, col));
     }
 
     public void addGameStateListener(Socket clientSocket) {
