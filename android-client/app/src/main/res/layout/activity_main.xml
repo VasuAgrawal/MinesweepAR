@@ -5,4 +5,133 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.build18.minesweepar.MainActivity">
+
+    <!-- used to show a camera preview -->
+    <TextureView
+        android:id="@+id/preview_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- layout for top overlays -->
+    <RelativeLayout
+        android:id="@+id/top_overlay_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/darkTransparent">
+
+        <RelativeLayout
+            android:id="@+id/percent_uncovered_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/overlay_side_margin">
+
+            <TextView
+                android:id="@+id/percent_uncovered_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:textColor="@color/colorTitle"
+                android:text="UNCOVERED" />
+
+            <TextView
+                android:id="@+id/percent_uncovered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/percent_uncovered_title"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/overlay_margin"
+                android:textColor="@color/colorContent"
+                android:textSize="28dp"
+                android:text="33%" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/time_elapsed_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/overlay_side_margin">
+
+            <TextView
+                android:id="@+id/time_elapsed_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_alignParentTop="true"
+                android:textColor="@color/colorTitle"
+                android:text="TIME" />
+
+            <TextView
+                android:id="@+id/time_elapsed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/time_elapsed_title"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/overlay_margin"
+                android:textColor="@color/colorContent"
+                android:textSize="28dp"
+                android:text="3:50" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/flags_remaining_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/overlay_side_margin">
+
+                <TextView
+                    android:id="@+id/flags_remaining_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/colorTitle"
+                    android:text="FLAGS LEFT" />
+
+            <TextView
+                android:id="@+id/flags_remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/flags_remaining_title"
+                android:layout_marginTop="@dimen/overlay_margin"
+                android:textColor="@color/colorContent"
+                android:textSize="28dp"
+                android:text="8" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/flag_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="80dp"
+        android:height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/overlay_side_margin"
+        android:layout_marginBottom="@dimen/overlay_side_margin"
+        android:text="FLAG" />
+
+    <Button
+        android:id="@+id/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="80dp"
+        android:height="80dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="@dimen/overlay_side_margin"
+        android:layout_marginBottom="@dimen/overlay_side_margin"
+        android:text="MAP" />
+
 </RelativeLayout>
