@@ -192,7 +192,7 @@ public class ServerMain {
 
         Log.i(TAG, String.format("Key press detected at (%d, %d)", row, col));
         game.pressMine(row, col);
-        updateListeners(String.format("Stepped on mine at location (%d, %d)!", row, col));
+        updateListeners(String.format("Stepped on button at location (%d, %d)!", row, col));
     }
 
     public void addGameStateListener(Socket clientSocket) {
@@ -217,7 +217,7 @@ public class ServerMain {
                 .put("mineCount", game.getMineCount())
                 .put("status", game.getStatus().toString());
 
-            jsonString = state.toString();
+            jsonString = state.toString() + "\n";
     	} catch(JSONException e) {
     		Log.e(TAG,  "Failed to build JSON Object", e);
     		return;

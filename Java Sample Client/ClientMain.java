@@ -30,8 +30,7 @@ public class ClientMain {
         RESTART, MARK, KEY_PRESS, GAME_STATE
     };
 
-
-    public static void main(String[] args) {
+    private static void attachListener() {
     	Socket gameStateSocket = null;
     	try {
     		gameStateSocket = new Socket(SERVER_HOST, SERVER_PORT);
@@ -50,6 +49,7 @@ public class ClientMain {
 			
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(gameStateSocket.getOutputStream()));
 			out.write(jsonString);
+			out.write("\n");
 			out.flush();
 			
 			Log.i(TAG, "Successfully connected to server");
@@ -59,6 +59,135 @@ public class ClientMain {
 		} catch (IOException e) {
 			Log.e(TAG, "Unable to send json payload");
 		}
+    	
+    	final Socket listenSocket = gameStateSocket;
+    	
+    	Thread t = new Thread(new Runnable() {
+    		public void run() {
+    			Log.i(TAG, "Listerner Thread Starting up");
+    			try {
+					BufferedReader in = new BufferedReader(new InputStreamReader(listenSocket.getInputStream()));
+					
+					while(true) {
+						String line = in.readLine();
+						Log.i(TAG, "Game State Update:" + line);
+					}
+				} catch (IOException e) {
+					Log.i(TAG, "Couldn't get the input stream");
+				}
+    			
+    		}
+    	});
+    	
+    	t.start();
+    }
+    
+    private static void sendKeyPress() {
+    	Socket socket = null;
+    	try {
+    		socket = new Socket(SERVER_HOST, SERVER_PORT);
+			
+		} catch (IOException e) {
+			Log.e(TAG, "Couldn't connect to server", e);
+			return;
+		}
+    	
+    	try {
+			JSONObject request = new JSONObject()
+					.put(JSON_TYPE_FIELD, ConnectionType.KEY_PRESS.toString())
+					.put(JSON_PAYLOAD_FIELD, "7:8");
+			
+			String jsonString = request.toString();
+			
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			out.write(jsonString);
+			out.write("\n");
+			out.flush();
+			
+			Log.i(TAG, "Sent Key press");
+			
+			socket.close();
+			
+		} catch (JSONException e) {
+			Log.e(TAG, "Unable to create JSON Payload");
+		} catch (IOException e) {
+			Log.e(TAG, "Unable to send json payload");
+		}
+    	
+    	
+    }
+    
+    private static void restartGame() {
+    	Socket socket = null;
+    	try {
+    		socket = new Socket(SERVER_HOST, SERVER_PORT);
+			
+		} catch (IOException e) {
+			Log.e(TAG, "Couldn't connect to server", e);
+			return;
+		}
+    	
+    	try {
+			JSONObject request = new JSONObject()
+					.put(JSON_TYPE_FIELD, ConnectionType.RESTART.toString())
+					.put(JSON_PAYLOAD_FIELD, "");
+			
+			String jsonString = request.toString();
+			
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			out.write(jsonString);
+			out.write("\n");
+			out.flush();
+			
+			Log.i(TAG, "Sent Restart");
+			
+			socket.close();
+			
+		} catch (JSONException e) {
+			Log.e(TAG, "Unable to create JSON Payload");
+		} catch (IOException e) {
+			Log.e(TAG, "Unable to send json payload");
+		}
+    }
+    
+    private static void markSquare() {
+    	Socket socket = null;
+    	try {
+    		socket = new Socket(SERVER_HOST, SERVER_PORT);
+			
+		} catch (IOException e) {
+			Log.e(TAG, "Couldn't connect to server", e);
+			return;
+		}
+    	
+    	try {
+			JSONObject request = new JSONObject()
+					.put(JSON_TYPE_FIELD, ConnectionType.MARK.toString())
+					.put(JSON_PAYLOAD_FIELD, "4:5");
+			
+			String jsonString = request.toString();
+			
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			out.write(jsonString);
+			out.write("\n");
+			out.flush();
+			
+			Log.i(TAG, "Sent Mark press");
+			
+			socket.close();
+			
+		} catch (JSONException e) {
+			Log.e(TAG, "Unable to create JSON Payload");
+		} catch (IOException e) {
+			Log.e(TAG, "Unable to send json payload");
+		}
+    }
+
+    public static void main(String[] args) {
+    	attachListener();
+    	restartGame();
+    	markSquare();
+    	sendKeyPress();
     }
     
 
