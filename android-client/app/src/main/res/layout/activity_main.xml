@@ -168,6 +168,6 @@
         android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/overlay_side_margin"
         android:layout_marginRight="@dimen/overlay_nav_margin"
-        android:text="FLAG" />
+        android:background="@drawable/ic_flag_red_48dp"/>
 
 </RelativeLayout>
