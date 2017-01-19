@@ -121,7 +121,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="@dimen/overlay_side_margin"
-        android:layout_marginBottom="@dimen/overlay_side_margin"
+        android:layout_marginBottom="@dimen/overlay_nav_margin"
         android:rotation="90"
         android:text="FLAG" />
 
@@ -134,7 +134,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/overlay_side_margin"
-        android:layout_marginBottom="@dimen/overlay_side_margin"
+        android:layout_marginBottom="@dimen/overlay_nav_margin"
         android:rotation="90"
         android:text="MAP" />
 
