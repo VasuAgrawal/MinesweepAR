@@ -5,4 +5,8 @@ package com.build18.minesweepar;
  */
 public class TagDetection {
 
+    public boolean isGood() {
+        return false; // TODO: Implement
+    }
+
 }
