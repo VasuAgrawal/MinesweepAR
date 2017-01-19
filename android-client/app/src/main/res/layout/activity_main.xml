@@ -15,8 +15,8 @@
      -->
     
     <org.opencv.android.JavaCameraView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/preview_view" />
 
     <!-- used to darken the screen during new game prompt -->
@@ -27,11 +27,43 @@
         android:background="@color/darkTransparent" />
 
     <!-- layout for top overlays -->
+
+    <RelativeLayout
+        android:id="@+id/new_game_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:padding="20dp"
+        android:rotation="0">
+
+         <TextView
+            android:id="@+id/new_game_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="24dp"
+            android:padding="10dp"
+            android:text="Start a new game?" />
+
+        <Button
+            android:id="@+id/new_game_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/new_game_title"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            android:text="New Game" />
+
+    </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/top_overlay_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/darkTransparent">
+        android:layout_height="match_parent"
+        android:background="@color/darkTransparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content">
 
         <RelativeLayout
             android:id="@+id/flags_remaining_layout"
@@ -40,7 +72,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:padding="@dimen/overlay_side_margin"
-            android:rotation="90">
+            android:rotation="0">
 
             <TextView
                 android:id="@+id/flags_remaining_title"
@@ -67,10 +99,10 @@
             android:id="@+id/time_elapsed_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
             android:padding="@dimen/overlay_side_margin"
-            android:rotation="90">
+            android:rotation="0">
 
             <TextView
                 android:id="@+id/time_elapsed_title"
@@ -98,10 +130,10 @@
             android:id="@+id/percent_uncovered_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
             android:padding="@dimen/overlay_side_margin"
-            android:rotation="90">
+            android:rotation="0">
 
             <TextView
                 android:id="@+id/percent_uncovered_title"
@@ -126,49 +158,8 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/new_game_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:padding="20dp"
-        android:rotation="90">
-
-         <TextView
-            android:id="@+id/new_game_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textSize="24dp"
-            android:padding="10dp"
-            android:text="Start a new game?" />
-
-        <Button
-            android:id="@+id/new_game_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/new_game_title"
-            android:layout_marginTop="20dp"
-            android:layout_centerHorizontal="true"
-            android:text="New Game" />
-
-    </RelativeLayout>
-
     <Button
         android:id="@+id/flag_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:width="80dp"
-        android:height="80dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="@dimen/overlay_side_margin"
-        android:layout_marginBottom="@dimen/overlay_nav_margin"
-        android:rotation="90"
-        android:text="FLAG" />
-
-    <Button
-        android:id="@+id/map_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:width="80dp"
@@ -177,7 +168,19 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/overlay_side_margin"
         android:layout_marginBottom="@dimen/overlay_nav_margin"
-        android:rotation="90"
-        android:text="MAP" />
+        android:text="FLAG" />
+
+    <Button
+        android:id="@+id/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="80dp"
+        android:height="80dp"
+        android:layout_marginTop="@dimen/overlay_nav_margin"
+        android:layout_marginRight="@dimen/overlay_side_margin"
+        android:text="MAP"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+         />
 
 </RelativeLayout>

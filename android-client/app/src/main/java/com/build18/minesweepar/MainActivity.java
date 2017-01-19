@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.core.Point;
-
+import org.opencv.core.*;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -418,11 +418,20 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat rgba = inputFrame.rgba();
 
-        Imgproc.line(rgba, new Point(5, 5), new Point(50, 50), new Scalar(255, 255, 0), 10);
+//        Mat rgba = new Mat();
+
+//        Core.transpose(temp, rgba);
+//        Log.d(TAG, "After transpose");
+//        Core.flip(rgba, rgba, 1);
+//        Log.d(TAG, "After flip");
+
+
+        Imgproc.line(rgba, new Point(5, 5), new Point(100, 100), new Scalar(255, 255, 0), 20);
 
 
         // TODO: Implement the overlay algorithm by modifying the rgba matrix
 
+        Log.d(TAG, "Done with operations");
 
         return rgba;
     }
