@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:padding="@dimen/overlay_side_margin">
+            android:padding="@dimen/overlay_side_margin"
+            android:rotation="90">
 
             <TextView
                 android:id="@+id/flags_remaining_title"
@@ -54,7 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentTop="true"
-            android:padding="@dimen/overlay_side_margin">
+            android:padding="@dimen/overlay_side_margin"
+            android:rotation="90">
 
             <TextView
                 android:id="@+id/time_elapsed_title"
@@ -84,7 +86,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:padding="@dimen/overlay_side_margin">
+            android:padding="@dimen/overlay_side_margin"
+            android:rotation="90">
 
             <TextView
                 android:id="@+id/percent_uncovered_title"
@@ -119,6 +122,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="@dimen/overlay_side_margin"
         android:layout_marginBottom="@dimen/overlay_side_margin"
+        android:rotation="90"
         android:text="FLAG" />
 
     <Button
@@ -131,6 +135,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/overlay_side_margin"
         android:layout_marginBottom="@dimen/overlay_side_margin"
+        android:rotation="90"
         android:text="MAP" />
 
 </RelativeLayout>
