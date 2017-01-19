@@ -19,6 +19,7 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
@@ -42,6 +43,16 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
     private CameraCaptureSession mCameraCaptureSession;
     private Size mPreviewSize;
     private GameStateManager mGameStateManager;
+
+    private TextView mFlagsRemainingTextView;
+    private TextView mTimeElapsedTextView;
+    private TextView mUncoveredPercentageTextView;
+
+    private int mFlagsLeft;
+    private int mSecondsElapsed;
+    private int mUncoveredPercentage;
+    private boolean mGameBegun;
+    private GameState.GameStatus mGameStatus;
 
     /*
      * PRIVATE CALLBACKS
@@ -114,6 +125,16 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
                     ).show();
                 }
         }
+    }
+
+    /*
+     * UI
+     */
+
+    private void updateUI() {
+        mFlagsRemainingTextView.setText(mFlagsLeft+"");
+        mTimeElapsedTextView.setText(mSecondsElapsed+"");
+        mUncoveredPercentageTextView.setText(mUncoveredPercentage+"");
     }
 
     /*
@@ -206,11 +227,17 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         // TODO: Do the background computation here
         Log.d(TAG, "Doing background computation for update");
 
+        mFlagsLeft = newGameState.getMineCount();
+        mSecondsElapsed = newGameState.getSecondsElapsed();
+//        mUncoveredPercentage = newGameState.getUncoveredPercentage();
+        mGameBegun = true;
+        mGameStatus = newGameState.getStatus();
+
         // Draw on the UI Thread in here
         runOnUiThread(new Runnable() {
             public void run() {
                 Log.d(TAG, "Running on UI Thread");
-                // TODO: Do the drawing stuff here
+                updateUI();
             }
         });
 
@@ -228,7 +255,6 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         // mGameStateManager.restartGame();
     }
 
-
     /*
      * LIFECYCLE
      */
@@ -240,6 +266,16 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         setContentView(R.layout.activity_main);
         mTextureView = (TextureView) findViewById(R.id.preview_view);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+        mFlagsRemainingTextView = (TextView) findViewById(R.id.flags_remaining);
+        mTimeElapsedTextView = (TextView) findViewById(R.id.time_elapsed);
+        mUncoveredPercentageTextView = (TextView) findViewById(R.id.percent_uncovered);
+
+        mFlagsLeft = 0;
+        mSecondsElapsed = 0;
+        mUncoveredPercentage = 0;
+        mGameBegun = false;
+        mGameStatus = GameState.GameStatus.WIN;
+        updateUI();
     }
 
     @Override
