@@ -50,16 +50,16 @@ data_out = queue.Queue()
 def draw_board(game_state):
 
     # TODO: Choose some other color for this.
-    screen.fill((255, 255, 255))
+    screen.fill((185, 185, 185))
 
     time = game_state['time']
     mineCount = game_state['mineCount']
 
     textFont = pygame.font.SysFont("arial", 30)
     timeText = textFont.render("Time: %d Min %d Sec" % (time // 60, time % 60),
-            True, (150,150,150))
+            True, (0,0,0))
     countText = textFont.render("Mine Count: %d" % mineCount, True,
-            (150,150,150))
+            (0,0,0))
     
     timeSize = textFont.size("Time: %d Min %d Sec" % (time // 60, time % 60))
     countSize = textFont.size("Mine Count: %d" % mineCount)

@@ -24,19 +24,6 @@ public class ServerMain {
     private static final String JSON_TYPE_FIELD = "type";
     private static final String JSON_PAYLOAD_FIELD = "payload";
 
-    private static final char[][] KEY_MAPPING = {
-      {'A', 'J', 'S', 'b', 'k', 't', '2', '!', ')'},
-      {'B', 'K', 'T', 'c', 'l', 'u', '3', '@', '-'},
-      {'C', 'L', 'U', 'd', 'm', 'v', '4', '#', '_'},
-      {'D', 'M', 'V', 'e', 'n', 'w', '5', '$', '='},
-      {'E', 'N', 'W', 'f', 'o', 'x', '6', '%', '+'},
-      {'F', 'O', 'X', 'g', 'p', 'y', '7', '^', ','},
-      {'G', 'P', 'Y', 'h', 'q', 'z', '8', '&', '<'},
-      {'H', 'Q', 'Z', 'i', 'r', '0', '9', '*', '.'},
-      {'I', 'R', 'a', 'j', 's', '1', ' ', '(', '>'}
-    };
-
-
     enum ConnectionType {
         RESTART, MARK, KEY_PRESS, GAME_STATE
     };

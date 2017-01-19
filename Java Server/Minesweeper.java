@@ -212,35 +212,37 @@ public class Minesweeper {
     	for(int i = 0; i < MINE_COUNT; i++) {
     		int mineLocation = r.nextInt(MAX_INDEX);
     		
-    		if(this.map[mineLocation] == SpaceSymbol.MINE.getSymbol()) {
+    		while(this.map[mineLocation] == SpaceSymbol.MINE.getSymbol()) {
     			Log.i(TAG, "Mine already exists at index: " + mineLocation);
-    			this.mineCount--;
-    		} else {
-    			Log.i(TAG, String.format("Mine placed at index %s", prettyLocation(mineLocation)));
-    			int row =  getRow(mineLocation);
-    			int column = getColumn(mineLocation);
-    			
-    			this.map[mineLocation] = SpaceSymbol.MINE.getSymbol();
-    					
-    			for(int deltaRow = -1; deltaRow <= 1; deltaRow++) {
-    				for(int deltaCol = -1; deltaCol <= 1; deltaCol++) {
-    					int neighborRow = row + deltaRow;
-    					int neighborCol = column + deltaCol;
-                        
-                        if(neighborRow < 0 || neighborRow >= BOARD_SIZE || neighborCol < 0 || neighborCol >= BOARD_SIZE) {
-                            continue;
-                        }
-    					
-    					int neighborIndex = getIndex(neighborRow, neighborCol);
-    						
-    					if(this.map[neighborIndex] == SpaceSymbol.MINE.getSymbol()) {
-    						Log.i(TAG, "Adjacent Mine Detected");
-    					} else {
-    						this.map[neighborIndex]++;
-    					}
-    				}
-    			}
+    			// This way we have a bound on the mine placements, in theory
+    			// it's possible to never terminate if we continue using random.
+    			mineLocation = (mineLocation + 1) % MAX_INDEX;
     		}
+    		
+			Log.i(TAG, String.format("Mine placed at index %s", prettyLocation(mineLocation)));
+			int row =  getRow(mineLocation);
+			int column = getColumn(mineLocation);
+			
+			this.map[mineLocation] = SpaceSymbol.MINE.getSymbol();
+					
+			for(int deltaRow = -1; deltaRow <= 1; deltaRow++) {
+				for(int deltaCol = -1; deltaCol <= 1; deltaCol++) {
+					int neighborRow = row + deltaRow;
+					int neighborCol = column + deltaCol;
+                    
+                    if(neighborRow < 0 || neighborRow >= BOARD_SIZE || neighborCol < 0 || neighborCol >= BOARD_SIZE) {
+                        continue;
+                    }
+					
+					int neighborIndex = getIndex(neighborRow, neighborCol);
+						
+					if(this.map[neighborIndex] == SpaceSymbol.MINE.getSymbol()) {
+						Log.i(TAG, "Adjacent Mine Detected");
+					} else {
+						this.map[neighborIndex]++;
+					}
+				}
+			}
     	}
     	
     	logBoard(this.map);
