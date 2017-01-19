@@ -217,7 +217,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         // Alternatively access fields from the cached game state in other parts of the program like
         // GameState latestGameState = mGameStateManager.getLatestGameState();
         // String latestCause = latestGameState.getCause();
-        // int secondsEllapsed = latestGameState.getSecondsEllapsed();
+        // int secondsElapsed = latestGameState.getSecondsElapsed();
         // char symbol = latestGameState.getSymbolAtLocation(0, 3); // Get the character on the board at location 0,3
         // int mineCount = latestGameState.getMineCount();
         // GameStatus status = latestGameState.getStatus(); // GameState.GameStatus.IN_GAME (or WIN or LOSS)

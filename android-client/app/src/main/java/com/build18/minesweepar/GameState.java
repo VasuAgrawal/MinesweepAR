@@ -40,7 +40,7 @@ public class GameState {
         return cause;
     }
 
-    public int getSecondsEllapsed() {
+    public int getSecondsElapsed() {
         return seconds;
     }
 
