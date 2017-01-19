@@ -14,6 +14,7 @@ import android.Manifest;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.Arrays;
@@ -212,4 +213,12 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         gameStateManager = new GameStateManager(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+    }
 }
