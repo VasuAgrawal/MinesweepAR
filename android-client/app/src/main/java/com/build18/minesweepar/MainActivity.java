@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
+import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.params.StreamConfigurationMap;
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -36,6 +40,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
     private TextureView mTextureView;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mCameraCaptureSession;
+    private Size mPreviewSize;
     private GameStateManager mGameStateManager;
 
     /*
@@ -123,6 +128,9 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             String cameraID = manager.getCameraIdList()[0];
+            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
+            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            mPreviewSize = choosePreviewSize(map);
             manager.openCamera(cameraID, mCameraDeviceCallback, null);
         } catch (CameraAccessException e) {
             Toast.makeText(this, "Cannot access the camera.", Toast.LENGTH_SHORT).show();
@@ -131,6 +139,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
 
     private void previewCamera(CameraDevice cameraDevice) {
         SurfaceTexture previewTexture = mTextureView.getSurfaceTexture();
+        previewTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         Surface previewSurface = new Surface(previewTexture);
 
         final CaptureRequest.Builder previewBuilder;
@@ -174,6 +183,17 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
             mCameraDevice.close();
             mCameraDevice = null;
         }
+    }
+
+    private Size choosePreviewSize(StreamConfigurationMap map) {
+        Size sizes[] = map.getOutputSizes(ImageFormat.JPEG);
+        for (Size s : sizes) {
+            if (s.getWidth() == 864 && s.getHeight() == 480) {
+                return s;
+            }
+        }
+        Log.d(TAG, "Couldn't find the desired Size!");
+        return sizes[0];
     }
 
     /*
