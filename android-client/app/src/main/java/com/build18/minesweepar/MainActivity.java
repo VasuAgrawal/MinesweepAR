@@ -196,11 +196,10 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         mTextureView = (TextureView) findViewById(R.id.preview_view);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-
-
     }
 
     @Override
