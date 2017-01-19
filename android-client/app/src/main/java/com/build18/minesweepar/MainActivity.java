@@ -51,10 +51,6 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
      * PRIVATE VARIABLES
      */
 
-//    private TextureView mTextureView;
-    private CameraDevice mCameraDevice;
-    private CameraCaptureSession mCameraCaptureSession;
-    private Size mPreviewSize;
     private GameStateManager mGameStateManager;
 
     private View mNewGameOverlay;
@@ -76,52 +72,6 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
     /*
      * PRIVATE CALLBACKS
      */
-
-    private TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
-        @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture,
-                                              int width, int height) {
-            Log.d(TAG, "Surface Texture Available");
-            // TODO: This was needed for some race condition with the camera that I don't understand
-            // @Andrew, please advise
-//            startCamera();
-        }
-
-        @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture,
-                                                int width, int height) {
-            return;
-        }
-
-        @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
-            return true;
-        }
-
-        @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-        }
-    };
-
-//    private CameraDevice.StateCallback mCameraDeviceCallback = new CameraDevice.StateCallback() {
-//        @Override
-//        public void onOpened(CameraDevice cameraDevice) {
-//            mCameraDevice = cameraDevice;
-//            previewCamera(cameraDevice);
-//        }
-//
-//        @Override
-//        public void onDisconnected(CameraDevice cameraDevice) {
-//            Log.d(TAG, "Camera disconnected.");
-//            cameraDevice.close();
-//        }
-//
-//        @Override
-//        public void onError(CameraDevice cameraDevice, int error) {
-//            Log.d(TAG, "Camera errored.");
-//            cameraDevice.close();
-//        }
-//    };
 
     private Button.OnClickListener mNewGameClickListener = new Button.OnClickListener() {
         @Override
@@ -202,72 +152,13 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             return;
         }
         mOpenCvCameraView.enableView();
-
-//        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-//        try {
-//            String cameraID = manager.getCameraIdList()[0];
-//            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
-//            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-//            mPreviewSize = choosePreviewSize(map);
-//            manager.openCamera(cameraID, mCameraDeviceCallback, null);
-//        } catch (CameraAccessException e) {
-//            Toast.makeText(this, "Cannot access the camera.", Toast.LENGTH_SHORT).show();
-//        }
     }
-
-//    private void previewCamera(CameraDevice cameraDevice) {
-//        SurfaceTexture previewTexture = mTextureView.getSurfaceTexture();
-//        previewTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-//        Surface previewSurface = new Surface(previewTexture);
-//
-//        final CaptureRequest.Builder previewBuilder;
-//        try {
-//            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-//        } catch (CameraAccessException e) {
-//            Log.d(TAG, "Could not create capture request.");
-//            return;
-//        }
-//        previewBuilder.addTarget(previewSurface);
-//
-//        try {
-//            cameraDevice.createCaptureSession(Arrays.asList(previewSurface), new CameraCaptureSession.StateCallback() {
-//                @Override
-//                public void onConfigured(CameraCaptureSession cameraCaptureSession) {
-//                    mCameraCaptureSession = cameraCaptureSession;
-//                    try {
-//                        cameraCaptureSession.setRepeatingRequest(previewBuilder.build(), null, null);
-//                    } catch (CameraAccessException e) {
-//                        Log.d(TAG, "Could not set repeating request for frames.");
-//                        return;
-//                    }
-//                }
-//
-//                @Override
-//                public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-//                    Log.d(TAG, "Configuring camera failed.");
-//                }
-//            }, null);
-//        } catch (CameraAccessException e) {
-//            Log.d(TAG, "Could not create capture session.");
-//        }
-//    }
 
     private void stopCamera() {
         if(mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
     }
-
-//    private Size choosePreviewSize(StreamConfigurationMap map) {
-//        Size sizes[] = map.getOutputSizes(ImageFormat.JPEG);
-//        for (Size s : sizes) {
-//            if (s.getWidth() == 864 && s.getHeight() == 480) {
-//                return s;
-//            }
-//        }
-//        Log.d(TAG, "Couldn't find the desired Size!");
-//        return sizes[0];
-//    }
 
     /*
      * GAME STATE
@@ -324,10 +215,6 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-//        mTextureView = (TextureView) findViewById(R.id.preview_view);
-//        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-
-
         // TODO: Load images for overlay
 
         mNewGameOverlay = findViewById(R.id.new_game_overlay);
@@ -365,12 +252,6 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             Log.d(TAG, "Open CV Library found inside package, using it");
             openCVLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
-
-//        if (mTextureView.isAvailable()) {
-//            startCamera();
-//        } else {
-//            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-//        }
     }
 
     @Override
