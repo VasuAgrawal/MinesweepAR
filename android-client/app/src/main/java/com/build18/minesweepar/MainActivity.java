@@ -262,8 +262,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
 
     public void gameStateChanged(GameState newGameState) {
         // Write code here to access the game state and update the UI fields
-
-        // TODO: Do the background computation here
+        
         Log.d(TAG, "Doing background computation for update");
 
         mFlagsLeft = newGameState.getMineCount();
