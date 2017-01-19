@@ -19,6 +19,7 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,10 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
     private Size mPreviewSize;
     private GameStateManager mGameStateManager;
 
+    private View mNewGameOverlay;
+    private View mNewGameView;
+    private TextView mNewGameTitle;
+    private Button mNewGameButton;
     private TextView mFlagsRemainingTextView;
     private TextView mTimeElapsedTextView;
     private TextView mUncoveredPercentageTextView;
@@ -102,6 +107,17 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         }
     };
 
+    private Button.OnClickListener mNewGameClickListener = new Button.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new Thread(new Runnable() {
+                public void run() {
+                    mGameStateManager.restartGame();
+                }
+            }).start();
+        }
+    };
+
     /*
      * PERMISSIONS
      */
@@ -135,6 +151,29 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         mFlagsRemainingTextView.setText(mFlagsLeft+"");
         mTimeElapsedTextView.setText(mSecondsElapsed+"");
         mUncoveredPercentageTextView.setText(mUncoveredPercentage+"");
+
+        if (!mGameBegun) {
+            mNewGameTitle.setText("Welcome to MinesweepAR!");
+            mNewGameOverlay.setVisibility(View.VISIBLE);
+            mNewGameView.setVisibility(View.VISIBLE);
+        } else {
+            switch (mGameStatus) {
+                case IN_GAME:
+                    mNewGameOverlay.setVisibility(View.INVISIBLE);
+                    mNewGameView.setVisibility(View.INVISIBLE);
+                    break;
+                case WIN:
+                    mNewGameTitle.setText("Congratulations, you've won!");
+                    mNewGameOverlay.setVisibility(View.VISIBLE);
+                    mNewGameView.setVisibility(View.VISIBLE);
+                    break;
+                case LOSS:
+                    mNewGameTitle.setText("Aww, you've blown up!");
+                    mNewGameOverlay.setVisibility(View.VISIBLE);
+                    mNewGameView.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
     }
 
     /*
@@ -266,9 +305,15 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         setContentView(R.layout.activity_main);
         mTextureView = (TextureView) findViewById(R.id.preview_view);
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+
+        mNewGameOverlay = (View) findViewById(R.id.new_game_overlay);
+        mNewGameView = (View) findViewById(R.id.new_game_layout);
         mFlagsRemainingTextView = (TextView) findViewById(R.id.flags_remaining);
         mTimeElapsedTextView = (TextView) findViewById(R.id.time_elapsed);
         mUncoveredPercentageTextView = (TextView) findViewById(R.id.percent_uncovered);
+        mNewGameTitle = (TextView) findViewById(R.id.new_game_title);
+        mNewGameButton = (Button) findViewById(R.id.new_game_button);
+        mNewGameButton.setOnClickListener(mNewGameClickListener);
 
         mFlagsLeft = 0;
         mSecondsElapsed = 0;

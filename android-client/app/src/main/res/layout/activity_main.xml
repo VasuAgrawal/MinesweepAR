@@ -12,6 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <!-- used to darken the screen during new game prompt -->
+    <View
+        android:id="@+id/new_game_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/darkTransparent" />
+
     <!-- layout for top overlays -->
     <RelativeLayout
         android:id="@+id/top_overlay_layout"
@@ -109,6 +116,34 @@
                 android:text="33%" />
 
         </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/new_game_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:padding="20dp"
+        android:rotation="90">
+
+         <TextView
+            android:id="@+id/new_game_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="24dp"
+            android:padding="10dp"
+            android:text="Start a new game?" />
+
+        <Button
+            android:id="@+id/new_game_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/new_game_title"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            android:text="New Game" />
 
     </RelativeLayout>
 
