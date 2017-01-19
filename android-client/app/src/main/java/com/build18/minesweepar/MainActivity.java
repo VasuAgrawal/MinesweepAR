@@ -20,13 +20,20 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.opencv.core.Point;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.Arrays;
 
@@ -44,7 +51,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
      * PRIVATE VARIABLES
      */
 
-    private TextureView mTextureView;
+//    private TextureView mTextureView;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mCameraCaptureSession;
     private Size mPreviewSize;
@@ -96,25 +103,25 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         }
     };
 
-    private CameraDevice.StateCallback mCameraDeviceCallback = new CameraDevice.StateCallback() {
-        @Override
-        public void onOpened(CameraDevice cameraDevice) {
-            mCameraDevice = cameraDevice;
-            previewCamera(cameraDevice);
-        }
-
-        @Override
-        public void onDisconnected(CameraDevice cameraDevice) {
-            Log.d(TAG, "Camera disconnected.");
-            cameraDevice.close();
-        }
-
-        @Override
-        public void onError(CameraDevice cameraDevice, int error) {
-            Log.d(TAG, "Camera errored.");
-            cameraDevice.close();
-        }
-    };
+//    private CameraDevice.StateCallback mCameraDeviceCallback = new CameraDevice.StateCallback() {
+//        @Override
+//        public void onOpened(CameraDevice cameraDevice) {
+//            mCameraDevice = cameraDevice;
+//            previewCamera(cameraDevice);
+//        }
+//
+//        @Override
+//        public void onDisconnected(CameraDevice cameraDevice) {
+//            Log.d(TAG, "Camera disconnected.");
+//            cameraDevice.close();
+//        }
+//
+//        @Override
+//        public void onError(CameraDevice cameraDevice, int error) {
+//            Log.d(TAG, "Camera errored.");
+//            cameraDevice.close();
+//        }
+//    };
 
     private Button.OnClickListener mNewGameClickListener = new Button.OnClickListener() {
         @Override
@@ -194,76 +201,73 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             requestCameraPermission();
             return;
         }
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
-            String cameraID = manager.getCameraIdList()[0];
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
-            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            mPreviewSize = choosePreviewSize(map);
-            manager.openCamera(cameraID, mCameraDeviceCallback, null);
-        } catch (CameraAccessException e) {
-            Toast.makeText(this, "Cannot access the camera.", Toast.LENGTH_SHORT).show();
-        }
+        mOpenCvCameraView.enableView();
+
+//        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+//        try {
+//            String cameraID = manager.getCameraIdList()[0];
+//            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
+//            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+//            mPreviewSize = choosePreviewSize(map);
+//            manager.openCamera(cameraID, mCameraDeviceCallback, null);
+//        } catch (CameraAccessException e) {
+//            Toast.makeText(this, "Cannot access the camera.", Toast.LENGTH_SHORT).show();
+//        }
     }
 
-    private void previewCamera(CameraDevice cameraDevice) {
-        SurfaceTexture previewTexture = mTextureView.getSurfaceTexture();
-        previewTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-        Surface previewSurface = new Surface(previewTexture);
-
-        final CaptureRequest.Builder previewBuilder;
-        try {
-            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-        } catch (CameraAccessException e) {
-            Log.d(TAG, "Could not create capture request.");
-            return;
-        }
-        previewBuilder.addTarget(previewSurface);
-
-        try {
-            cameraDevice.createCaptureSession(Arrays.asList(previewSurface), new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(CameraCaptureSession cameraCaptureSession) {
-                    mCameraCaptureSession = cameraCaptureSession;
-                    try {
-                        cameraCaptureSession.setRepeatingRequest(previewBuilder.build(), null, null);
-                    } catch (CameraAccessException e) {
-                        Log.d(TAG, "Could not set repeating request for frames.");
-                        return;
-                    }
-                }
-
-                @Override
-                public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-                    Log.d(TAG, "Configuring camera failed.");
-                }
-            }, null);
-        } catch (CameraAccessException e) {
-            Log.d(TAG, "Could not create capture session.");
-        }
-    }
+//    private void previewCamera(CameraDevice cameraDevice) {
+//        SurfaceTexture previewTexture = mTextureView.getSurfaceTexture();
+//        previewTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+//        Surface previewSurface = new Surface(previewTexture);
+//
+//        final CaptureRequest.Builder previewBuilder;
+//        try {
+//            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+//        } catch (CameraAccessException e) {
+//            Log.d(TAG, "Could not create capture request.");
+//            return;
+//        }
+//        previewBuilder.addTarget(previewSurface);
+//
+//        try {
+//            cameraDevice.createCaptureSession(Arrays.asList(previewSurface), new CameraCaptureSession.StateCallback() {
+//                @Override
+//                public void onConfigured(CameraCaptureSession cameraCaptureSession) {
+//                    mCameraCaptureSession = cameraCaptureSession;
+//                    try {
+//                        cameraCaptureSession.setRepeatingRequest(previewBuilder.build(), null, null);
+//                    } catch (CameraAccessException e) {
+//                        Log.d(TAG, "Could not set repeating request for frames.");
+//                        return;
+//                    }
+//                }
+//
+//                @Override
+//                public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
+//                    Log.d(TAG, "Configuring camera failed.");
+//                }
+//            }, null);
+//        } catch (CameraAccessException e) {
+//            Log.d(TAG, "Could not create capture session.");
+//        }
+//    }
 
     private void stopCamera() {
-        if (mCameraCaptureSession != null) {
-            mCameraCaptureSession.close();
-            mCameraCaptureSession = null;
-        }
-        if (mCameraDevice != null) {
-            mCameraDevice.close();
-            mCameraDevice = null;
+        if(mOpenCvCameraView != null) {
+            mOpenCvCameraView.disableView();
         }
     }
 
-    private Size choosePreviewSize(StreamConfigurationMap map) {
-        Size sizes[] = map.getOutputSizes(ImageFormat.JPEG);
-        for (Size s : sizes) {
-            if (s.getWidth() == 864 && s.getHeight() == 480) {
-                return s;
-            }
-        }
-        Log.d(TAG, "Couldn't find the desired Size!");
-        return sizes[0];
-    }
+//    private Size choosePreviewSize(StreamConfigurationMap map) {
+//        Size sizes[] = map.getOutputSizes(ImageFormat.JPEG);
+//        for (Size s : sizes) {
+//            if (s.getWidth() == 864 && s.getHeight() == 480) {
+//                return s;
+//            }
+//        }
+//        Log.d(TAG, "Couldn't find the desired Size!");
+//        return sizes[0];
+//    }
 
     /*
      * GAME STATE
@@ -310,9 +314,21 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d(TAG, "Called onCreate");
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.activity_main);
-        mTextureView = (TextureView) findViewById(R.id.preview_view);
-        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.preview_view);
+        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
+
+//        mTextureView = (TextureView) findViewById(R.id.preview_view);
+//        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+
+
+        // TODO: Load images for overlay
 
         mNewGameOverlay = (View) findViewById(R.id.new_game_overlay);
         mNewGameView = (View) findViewById(R.id.new_game_layout);
@@ -328,17 +344,10 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         mUncoveredPercentage = 0;
         mGameBegun = false;
         mGameStatus = GameState.GameStatus.WIN;
-        updateUI();
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // TODO: This needs to be called when the app launches, but I'm not sure this is the
-        // right place for it....
-        Log.i(TAG, "onStart Calling game State manager");
         mGameStateManager = new GameStateManager(this);
+
+        updateUI();
     }
 
     @Override
@@ -349,17 +358,35 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
-        if (mTextureView.isAvailable()) {
-            startCamera();
+        if(!OpenCVLoader.initDebug()) {
+            Log.d(TAG, "Internal OpenCV Library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, openCVLoaderCallback);
         } else {
-            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+            Log.d(TAG, "Open CV Library found inside package, using it");
+            openCVLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+
+//        if (mTextureView.isAvailable()) {
+//            startCamera();
+//        } else {
+//            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+//        }
     }
 
     @Override
     protected void onPause() {
-        stopCamera();
         super.onPause();
+        stopCamera();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mOpenCvCameraView != null) {
+            mOpenCvCameraView.disableView();
+        }
+
+        // TODO: Release any resources created in onCreate
     }
 
     private BaseLoaderCallback openCVLoaderCallback = new BaseLoaderCallback(this) {
@@ -378,16 +405,25 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
     @Override
     public void onCameraViewStarted(int width, int height) {
+        // TODO: Do setup stuff for camera resources here
 
     }
 
     @Override
     public void onCameraViewStopped() {
-
+        // TODO: Release any resources created in onCameraViewStarted
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        return null;
+        Mat rgba = inputFrame.rgba();
+
+        Imgproc.line(rgba, new Point(5, 5), new Point(50, 50), new Scalar(255, 255, 0), 10);
+
+
+        // TODO: Implement the overlay algorithm by modifying the rgba matrix
+
+
+        return rgba;
     }
 }
