@@ -26,4 +26,5 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
     compile files('libs/java-json.jar')
+    compile project(':openCVLibrary320')
 }

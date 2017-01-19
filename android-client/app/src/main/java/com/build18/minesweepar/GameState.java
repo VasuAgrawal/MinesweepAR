@@ -18,14 +18,16 @@ public class GameState {
     private final int seconds;
     private final char[] board;
     private final int mineCount;
+    private final int uncoveredPercentage;
     private final GameStatus status;
     private final int size;
 
-    public GameState(String cause, int seconds, char[] board, int mineCount, String status) {
+    public GameState(String cause, int seconds, char[] board, int mineCount, int uncoveredPercentage, String status) {
         this.cause = cause;
         this.seconds = seconds;
         this.board = board;
         this.mineCount = mineCount;
+        this.uncoveredPercentage = uncoveredPercentage;
         this.status = GameStatus.valueOf(status);
         this.size = (int)Math.sqrt(this.board.length);
 
@@ -40,7 +42,7 @@ public class GameState {
         return cause;
     }
 
-    public int getSecondsEllapsed() {
+    public int getSecondsElapsed() {
         return seconds;
     }
 
@@ -51,6 +53,10 @@ public class GameState {
 
     public int getMineCount() {
         return mineCount;
+    }
+
+    public int getUncoveredPercentage() {
+        return uncoveredPercentage;
     }
 
     public GameStatus getStatus() {

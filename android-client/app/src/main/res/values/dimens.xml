@@ -7,4 +7,6 @@
     <dimen name="overlay_side_margin">20dp</dimen>
     <!-- Margin between two overlays -->
     <dimen name="overlay_margin">10dp</dimen>
+    <!-- Margin big enough for margin + width of navigation bar -->
+    <dimen name="overlay_nav_margin">50dp</dimen>
 </resources>

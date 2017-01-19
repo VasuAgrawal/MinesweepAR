@@ -1,1 +1,2 @@
 include ':app', ':java-json'
+include ':openCVLibrary320'
