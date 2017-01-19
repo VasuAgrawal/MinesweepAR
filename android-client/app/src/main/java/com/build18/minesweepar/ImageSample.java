@@ -100,7 +100,8 @@ public class ImageSample extends Activity implements CvCameraViewListener2 {
 
 //        setContentView(R.layout.image_manipulations_surface_view);
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.image_manipulations_activity_surface_view);
+        // TODO: This should not be commented out
+//        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.image_manipulations_activity_surface_view);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
