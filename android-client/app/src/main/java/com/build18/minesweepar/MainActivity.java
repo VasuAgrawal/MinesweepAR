@@ -330,8 +330,8 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
         // TODO: Load images for overlay
 
-        mNewGameOverlay = (View) findViewById(R.id.new_game_overlay);
-        mNewGameView = (View) findViewById(R.id.new_game_layout);
+        mNewGameOverlay = findViewById(R.id.new_game_overlay);
+        mNewGameView = findViewById(R.id.new_game_layout);
         mFlagsRemainingTextView = (TextView) findViewById(R.id.flags_remaining);
         mTimeElapsedTextView = (TextView) findViewById(R.id.time_elapsed);
         mUncoveredPercentageTextView = (TextView) findViewById(R.id.percent_uncovered);
