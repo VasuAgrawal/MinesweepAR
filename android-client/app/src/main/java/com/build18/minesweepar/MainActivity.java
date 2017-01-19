@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
      */
 
     private TextureView mTextureView;
-    private GameStateManager gameStateManager;
+    private GameStateManager mGameStateManager;
 
     /*
      * PRIVATE CALLBACKS
@@ -161,6 +161,10 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         }
     }
 
+    /*
+     * GAME STATE
+     */
+
     public void gameStateChanged(GameState newGameState) {
         // Write code here to access the game state and update the UI fields
 
@@ -176,7 +180,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         });
 
         // Alternatively access fields from the cached game state in other parts of the program like
-        // GameState latestGameState = gameStateManager.getLatestGameState();
+        // GameState latestGameState = mGameStateManager.getLatestGameState();
         // String latestCause = latestGameState.getCause();
         // int secondsEllapsed = latestGameState.getSecondsEllapsed();
         // char symbol = latestGameState.getSymbolAtLocation(0, 3); // Get the character on the board at location 0,3
@@ -185,8 +189,8 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         // int boardSize = latestGameState.boardSize(); // Should always be 9
 
         // To interact with the server:
-        // gameStateManager.toggleMark(row, column);
-        // gameStateManager.restartGame();
+        // mGameStateManager.toggleMark(row, column);
+        // mGameStateManager.restartGame();
     }
 
 
@@ -210,7 +214,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         // TODO: This needs to be called when the app launches, but I'm not sure this is the
         // right place for it....
         Log.i(TAG, "onStart Calling game State manager");
-        gameStateManager = new GameStateManager(this);
+        mGameStateManager = new GameStateManager(this);
     }
 
     @Override
