@@ -73,6 +73,8 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
+    private Overlay overlay;
+
     /*
      * PRIVATE CALLBACKS
      */
@@ -405,33 +407,25 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        // TODO: Do setup stuff for camera resources here
+        this.overlay = new Overlay();
 
     }
 
     @Override
     public void onCameraViewStopped() {
-        // TODO: Release any resources created in onCameraViewStarted
+        if(this.overlay != null) {
+            overlay.release();
+        }
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
         Mat rgba = inputFrame.rgba();
 
-//        Mat rgba = new Mat();
+        rgba = overlay.overlayTiles(rgba);
 
-//        Core.transpose(temp, rgba);
-//        Log.d(TAG, "After transpose");
-//        Core.flip(rgba, rgba, 1);
-//        Log.d(TAG, "After flip");
-
-
-        Imgproc.line(rgba, new Point(5, 5), new Point(100, 100), new Scalar(255, 255, 0), 20);
-
-
-        // TODO: Implement the overlay algorithm by modifying the rgba matrix
-
-        Log.d(TAG, "Done with operations");
+        Imgproc.line(rgba, new Point(5, 5), new Point(200, 200), new Scalar(255, 255, 0), 20);
 
         return rgba;
     }
