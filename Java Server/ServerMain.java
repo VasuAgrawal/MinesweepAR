@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,24 @@ public class ServerMain {
 
     public static void main(String[] args) {
         ServerMain server = new ServerMain(SERVER_PORT);
+        
+        // Thread to send updates every second.
+        (new Thread() {
+        	public void run() {
+        		while (true) {
+	        		server.updateListeners("");
+	        		try {
+	        			// TODO: Make this time based on how long it takes to send data,
+	        			// so that we don't accumulate skew.
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						Log.i(TAG, "Issue with thread sleep.");
+						e.printStackTrace();
+					}
+        		}
+        	}
+        }).start();
+
         server.waitForConnection();
     }
 
@@ -191,7 +210,7 @@ public class ServerMain {
 		}
     }
 
-    public void updateListeners(String cause) {
+    synchronized public void updateListeners(String cause) {
 
     	String jsonString = null;
     	try {
