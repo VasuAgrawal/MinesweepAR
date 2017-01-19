@@ -24,9 +24,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.core.Mat;
+
 import java.util.Arrays;
 
-public class MainActivity extends Activity implements GameStateChangedHandler {
+public class MainActivity extends Activity implements GameStateChangedHandler, CameraBridgeViewBase.CvCameraViewListener2 {
 
     /*
      * PRIVATE CONSTANTS
@@ -60,6 +64,8 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
     private boolean mGameBegun;
     private GameState.GameStatus mGameStatus;
 
+    private CameraBridgeViewBase mOpenCvCameraView;
+
     /*
      * PRIVATE CALLBACKS
      */
@@ -69,7 +75,9 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture,
                                               int width, int height) {
             Log.d(TAG, "Surface Texture Available");
-            startCamera();
+            // TODO: This was needed for some race condition with the camera that I don't understand
+            // @Andrew, please advise
+//            startCamera();
         }
 
         @Override
@@ -352,5 +360,34 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
     protected void onPause() {
         stopCamera();
         super.onPause();
+    }
+
+    private BaseLoaderCallback openCVLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch(status) {
+                case SUCCESS:
+                    Log.i(TAG, "Open CV loaded successfully");
+                    startCamera();
+                    break;
+                default:
+                    super.onManagerConnected(status);
+            }
+        }
+    };
+
+    @Override
+    public void onCameraViewStarted(int width, int height) {
+
+    }
+
+    @Override
+    public void onCameraViewStopped() {
+
+    }
+
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        return null;
     }
 }

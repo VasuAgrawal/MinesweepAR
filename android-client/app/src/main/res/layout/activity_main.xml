@@ -7,10 +7,17 @@
     tools:context="com.build18.minesweepar.MainActivity">
 
     <!-- used to show a camera preview -->
+    <!-- Old Style Camera View
     <TextureView
         android:id="@+id/preview_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+     -->
+    
+    <org.opencv.android.JavaCameraView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/preview_view" />
 
     <!-- used to darken the screen during new game prompt -->
     <View
