@@ -20,7 +20,7 @@
         android:background="@color/darkTransparent">
 
         <RelativeLayout
-            android:id="@+id/percent_uncovered_layout"
+            android:id="@+id/flags_remaining_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -28,24 +28,23 @@
             android:padding="@dimen/overlay_side_margin">
 
             <TextView
-                android:id="@+id/percent_uncovered_title"
+                android:id="@+id/flags_remaining_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:textColor="@color/colorTitle"
-                android:text="UNCOVERED" />
+                android:text="FLAGS LEFT" />
 
             <TextView
-                android:id="@+id/percent_uncovered"
+                android:id="@+id/flags_remaining"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/percent_uncovered_title"
                 android:layout_centerInParent="true"
+                android:layout_below="@id/flags_remaining_title"
                 android:layout_marginTop="@dimen/overlay_margin"
                 android:textColor="@color/colorContent"
                 android:textSize="28dp"
-                android:text="33%" />
+                android:text="8" />
 
         </RelativeLayout>
 
@@ -80,7 +79,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/flags_remaining_layout"
+            android:id="@+id/percent_uncovered_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -88,23 +87,23 @@
             android:padding="@dimen/overlay_side_margin">
 
             <TextView
-                android:id="@+id/flags_remaining_title"
+                android:id="@+id/percent_uncovered_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:textColor="@color/colorTitle"
-                android:text="FLAGS LEFT" />
+                android:text="UNCOVERED" />
 
             <TextView
-                android:id="@+id/flags_remaining"
+                android:id="@+id/percent_uncovered"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/percent_uncovered_title"
                 android:layout_centerInParent="true"
-                android:layout_below="@id/flags_remaining_title"
                 android:layout_marginTop="@dimen/overlay_margin"
                 android:textColor="@color/colorContent"
                 android:textSize="28dp"
-                android:text="8" />
+                android:text="33%" />
 
         </RelativeLayout>
 
