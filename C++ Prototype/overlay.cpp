@@ -12,6 +12,8 @@
 #include "apriltags/CameraUtil.h"
 #include "apriltags/TagDetector.h"
 
+#define IN2M(x) (.0254 * x)
+
 enum Tile {
   ONE = 1,
   TWO = 2,
@@ -30,6 +32,16 @@ std::map<Tile, cv::Mat> tile_images;
 cv::Mat tile_mask;
 cv::Mat tile_points;
 
+// We need to map the id to an offset from 0, 0. The origin, 0, 0, will be found
+// at the top left of the board. Numbers will increment across the board (across
+// a row).
+std::vector<cv::Point3d> tile_offsets;
+// All of the corners of the different tiles in the image, in the order:
+//       1 * * * * * 2
+//       * * * * * * *
+//       * * * * * * *
+//       4 * * * * * 3
+std::vector<cv::Point3d> corners_all;
 
 void load_tiles() {
   tile_images[ONE] = cv::imread("images/1.png", CV_LOAD_IMAGE_COLOR);
@@ -48,14 +60,28 @@ void load_tiles() {
   const size_t tile_height = tile_images[BLANK].rows;
 
   tile_points = (cv::Mat_<double>(4, 2) <<
-      0.0f, tile_height,
-      tile_width, tile_height,
+      0.0f, 0.0f,
       tile_width, 0.0f,
-      0.0f, 0.0f
+      tile_width, tile_height,
+      0.0f, tile_height
   );
 
   // All the tiles have the same mask, so it can be generated once.
   tile_mask = cv::Mat(tile_images[BLANK].size(), CV_8U, cv::Scalar(255));
+
+  tile_offsets.push_back(cv::Point3d(IN2M(8), IN2M(8), 0)); // Tile 0
+  tile_offsets.push_back(cv::Point3d(IN2M(24), IN2M(8), 0)); // Tile 1
+
+  // Tile 0
+  corners_all.push_back(cv::Point3d(IN2M(0), IN2M(0), 0));
+  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(0), 0));
+  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(16), 0));
+  corners_all.push_back(cv::Point3d(IN2M(0), IN2M(16), 0));
+  // Tile 1
+  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(0), 0));
+  corners_all.push_back(cv::Point3d(IN2M(32), IN2M(0), 0));
+  corners_all.push_back(cv::Point3d(IN2M(32), IN2M(16), 0));
+  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(16), 0));
 }
 
 void processs_detections(const TagDetectionArray& detections,
@@ -64,19 +90,12 @@ void processs_detections(const TagDetectionArray& detections,
   static double ss = 1.5 * s; // half tag size in meters
   static double f = 500;
 
-  //// This can probably be 2d points?
-  //static cv::Point3d corners[4] = {
-      //cv::Point3d(-ss, -ss, 0),
-      //cv::Point3d( ss, -ss, 0),
-      //cv::Point3d( ss,  ss, 0),
-      //cv::Point3d(-ss,  ss, 0),
-  //};
-  static cv::Mat corners = (cv::Mat_<double>(4, 3) <<
-      -ss, -ss, 0,
-       ss, -ss, 0,
-       ss,  ss, 0,
-      -ss,  ss, 0
-  );
+  //static cv::Mat corners = (cv::Mat_<double>(4, 3) <<
+      //-ss, -ss, 0,
+       //ss, -ss, 0,
+       //ss,  ss, 0,
+      //-ss,  ss, 0
+  //);
 
   cv::Mat K = (cv::Mat_<double>(3, 3) <<
     f, 0, opticalCenter.x,
@@ -86,22 +105,68 @@ void processs_detections(const TagDetectionArray& detections,
 
   // Shouldn't usually be static, but it's set to zeros always.
   static cv::Mat_<double> distCoeffs = cv::Mat_<double>::zeros(4,1);
-  std::vector<cv::Point2d> frame_points;
+  std::vector<std::vector<cv::Point2d>> all_frame_points;
 
   for (const auto& detection : detections) {
     if (!detection.good) continue;
+    // First, we get the homography from the april tag.
     cv::Mat r, t; // Rotation and translation matrices
     CameraUtil::homographyToPoseCV(f, f, s, detection.homography, r, t);
 
-    // From the homography that was calculated earlier, figure out the four
-    // corners of the tile.
+    // The offset to apply to the entire set of corner points. Essentially,
+    // we're shifting the grid to be centered on the center of the current april
+    // tag.
+    auto offset = tile_offsets[detection.id];
+    auto corners(corners_all);
+    for (auto& corner : corners) {
+      corner -= offset;
+    }
+
+    // Project the corners of the ENTIRE TILE (16" x 16") into frame points,
+    // which are image coordinates. These image coordinates then need to get
+    // saved and eventually averaged.
+    std::vector<cv::Point2d> frame_points;
     cv::projectPoints(corners, r, t, K, distCoeffs, frame_points);
+    all_frame_points.push_back(frame_points);
+  }
 
-    cv::Mat H = cv::findHomography(tile_points, frame_points, 0);
+  // Now we have a vector of vectors, containing a bunch of theoretical frame
+  // points. They need to all be averaged together and distilled into a single
+  // vector.
+  std::vector<cv::Point2d> frame_points;
+  for (int i = 0; i < corners_all.size(); ++i) {
+    cv::Point2d current_point(0, 0);
 
+    for (int j = 0; j < all_frame_points.size(); ++j) {
+      current_point += all_frame_points[j][i];
+    }
+
+    frame_points.push_back(current_point / (double)all_frame_points.size());
+    //auto div = cv::Point2d(1.0f / all_frame_points.size(),
+        //1.0f / all_frame_points.size());
+    //frame_points.push_back(current_point * div);
+    //frame_points.push_back(cv::Point2d(current_point.at(0) / all_frame_points.size(),
+          //current_point.at(0) / all_frame_points.size()));
+    //current_point /= cv::Point2d(all_frame_points.size(),
+        //all_frame_points.size());
+    //frame_points.push_back(current_point);
+  }
+
+  for (int i = 0; i < 2; ++i) {
+    std::vector<cv::Point2d>::const_iterator begin = (
+        frame_points.begin() + i * 4);
+    std::vector<cv::Point2d>::const_iterator end = (
+        frame_points.begin() + (i + 1) * 4);
+    std::vector<cv::Point2d> points(begin, end);
+    
+    // Find a mapping from the full tile to the image coordindates that the
+    // warped image is supposed to be at.
+    cv::Mat H = cv::findHomography(tile_points, points, 0);
+    
+    // Finally, wth the warp calculated above, warp the actual image.
     cv::Mat tile_warped;
     cv::Mat mask_warped;
-    cv::warpPerspective(tile_images[Tile(detection.id % 8)], tile_warped, H,
+    cv::warpPerspective(tile_images[Tile(i % 8)], tile_warped, H,
         frame->size());
     cv::warpPerspective(tile_mask, mask_warped, H, frame->size());
     tile_warped.copyTo(*frame, mask_warped);
