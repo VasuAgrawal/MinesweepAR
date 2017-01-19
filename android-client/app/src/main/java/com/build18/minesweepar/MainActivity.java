@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     private float mBuff[];
     private Mat mSepiaKernel;
 
-    public static int viewMode = VIEW_MODE_RGBA;
+    public static int viewMode = VIEW_MODE_HIST;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -252,6 +252,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
                     mP2.y = mP1.y - 2 - (int) mBuff[h];
                     Imgproc.line(rgba, mP1, mP2, mWhilte, thikness);
                 }
+
                 // Hue
                 Imgproc.calcHist(Arrays.asList(mIntermediateMat), mChannels[0], mMat0, hist, mHistSize, mRanges);
                 Core.normalize(hist, hist, sizeRgba.height / 2, 0, Core.NORM_INF);
