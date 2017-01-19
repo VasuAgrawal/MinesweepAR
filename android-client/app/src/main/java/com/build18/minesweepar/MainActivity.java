@@ -34,6 +34,8 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
      */
 
     private TextureView mTextureView;
+    private CameraDevice mCameraDevice;
+    private CameraCaptureSession mCameraCaptureSession;
     private GameStateManager mGameStateManager;
 
     /*
@@ -67,6 +69,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
     private CameraDevice.StateCallback mCameraDeviceCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice cameraDevice) {
+            mCameraDevice = cameraDevice;
             previewCamera(cameraDevice);
         }
 
@@ -143,6 +146,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
             cameraDevice.createCaptureSession(Arrays.asList(previewSurface), new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession cameraCaptureSession) {
+                    mCameraCaptureSession = cameraCaptureSession;
                     try {
                         cameraCaptureSession.setRepeatingRequest(previewBuilder.build(), null, null);
                     } catch (CameraAccessException e) {
@@ -158,6 +162,17 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
             }, null);
         } catch (CameraAccessException e) {
             Log.d(TAG, "Could not create capture session.");
+        }
+    }
+
+    private void stopCamera() {
+        if (mCameraCaptureSession != null) {
+            mCameraCaptureSession.close();
+            mCameraCaptureSession = null;
+        }
+        if (mCameraDevice != null) {
+            mCameraDevice.close();
+            mCameraDevice = null;
         }
     }
 
@@ -224,5 +239,17 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+
+        if (mTextureView.isAvailable()) {
+            startCamera();
+        } else {
+            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        stopCamera();
+        super.onPause();
     }
 }
