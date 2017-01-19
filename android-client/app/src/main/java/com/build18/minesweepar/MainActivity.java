@@ -1,24 +1,10 @@
 package com.build18.minesweepar;
 
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.SurfaceTexture;
-import android.graphics.ImageFormat;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.params.StreamConfigurationMap;
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Size;
-import android.view.Surface;
-import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.core.Point;
-import org.opencv.core.*;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -34,8 +19,6 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-
-import java.util.Arrays;
 
 public class MainActivity extends Activity implements GameStateChangedHandler, CameraBridgeViewBase.CvCameraViewListener2 {
 
