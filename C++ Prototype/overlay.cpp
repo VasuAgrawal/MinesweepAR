@@ -12,8 +12,6 @@
 #include "apriltags/CameraUtil.h"
 #include "apriltags/TagDetector.h"
 
-#define IN2M(x) (.0254 * x)
-
 enum Tile {
   ONE = 1,
   TWO = 2,
@@ -43,6 +41,10 @@ std::vector<cv::Point3d> tile_offsets;
 //       4 * * * * * 3
 std::vector<cv::Point3d> corners_all;
 
+inline double IN2M(double x) {
+  return .0254 * x;
+}
+
 void load_tiles() {
   tile_images[ONE] = cv::imread("images/1.png", CV_LOAD_IMAGE_COLOR);
   tile_images[TWO] = cv::imread("images/2.png", CV_LOAD_IMAGE_COLOR);
@@ -69,19 +71,32 @@ void load_tiles() {
   // All the tiles have the same mask, so it can be generated once.
   tile_mask = cv::Mat(tile_images[BLANK].size(), CV_8U, cv::Scalar(255));
 
-  tile_offsets.push_back(cv::Point3d(IN2M(8), IN2M(8), 0)); // Tile 0
-  tile_offsets.push_back(cv::Point3d(IN2M(24), IN2M(8), 0)); // Tile 1
+  const double row_width = 16; // inches
+  const double col_height = 16; // inches
+  auto top_left = cv::Point3d(IN2M(-col_height / 2), IN2M(row_width/ 2), 0);
+  auto top_right = cv::Point3d(IN2M(col_height/ 2), IN2M(row_width/ 2), 0);
+  auto bot_right = cv::Point3d(IN2M(col_height/ 2), IN2M(-row_width/ 2), 0);
+  auto bot_left = cv::Point3d(IN2M(-col_height/ 2), IN2M(-row_width/ 2), 0);
 
-  // Tile 0
-  corners_all.push_back(cv::Point3d(IN2M(0), IN2M(0), 0));
-  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(0), 0));
-  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(16), 0));
-  corners_all.push_back(cv::Point3d(IN2M(0), IN2M(16), 0));
-  // Tile 1
-  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(0), 0));
-  corners_all.push_back(cv::Point3d(IN2M(32), IN2M(0), 0));
-  corners_all.push_back(cv::Point3d(IN2M(32), IN2M(16), 0));
-  corners_all.push_back(cv::Point3d(IN2M(16), IN2M(16), 0));
+  for (int row = 0; row < 1; ++row) {
+    for (int col = 0; col < 2; ++col) {
+      // Find the center of each tile, in a global coordinate space. The center
+      // of the tile is treated as (0, 0) for the local coordinate frame, so all
+      // of the points need to be translated to be relative to that origin,
+      // which is why the center is being added to tile_offsets.
+      auto center = cv::Point3d(IN2M(col * col_height + col_height / 2),
+          IN2M(row * row_width + row_width / 2), IN2M(0));
+      tile_offsets.push_back(center);
+      std::cout << "Center: " << center << std::endl;
+
+      // We push the global corner points in the order specified above onto
+      // corners_all to get points to project later.
+      corners_all.push_back(center + top_left);
+      corners_all.push_back(center + top_right);
+      corners_all.push_back(center + bot_right);
+      corners_all.push_back(center + bot_left);
+    }
+  }
 }
 
 void processs_detections(const TagDetectionArray& detections,
@@ -89,13 +104,6 @@ void processs_detections(const TagDetectionArray& detections,
   static double s = .1540; // tag size in meters
   static double ss = 1.5 * s; // half tag size in meters
   static double f = 500;
-
-  //static cv::Mat corners = (cv::Mat_<double>(4, 3) <<
-      //-ss, -ss, 0,
-       //ss, -ss, 0,
-       //ss,  ss, 0,
-      //-ss,  ss, 0
-  //);
 
   cv::Mat K = (cv::Mat_<double>(3, 3) <<
     f, 0, opticalCenter.x,
@@ -141,15 +149,8 @@ void processs_detections(const TagDetectionArray& detections,
       current_point += all_frame_points[j][i];
     }
 
+    //Push back the average of all of the points.
     frame_points.push_back(current_point / (double)all_frame_points.size());
-    //auto div = cv::Point2d(1.0f / all_frame_points.size(),
-        //1.0f / all_frame_points.size());
-    //frame_points.push_back(current_point * div);
-    //frame_points.push_back(cv::Point2d(current_point.at(0) / all_frame_points.size(),
-          //current_point.at(0) / all_frame_points.size()));
-    //current_point /= cv::Point2d(all_frame_points.size(),
-        //all_frame_points.size());
-    //frame_points.push_back(current_point);
   }
 
   for (int i = 0; i < 2; ++i) {
