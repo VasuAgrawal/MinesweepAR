@@ -8,7 +8,7 @@ public class Minesweeper {
     
     public static final int BOARD_SIZE = 9;
     public static final int MAX_INDEX = BOARD_SIZE * BOARD_SIZE;
-    private static final int MINE_COUNT = 10;
+    private static final int MINE_COUNT = 9;
     private static final String TAG = "Minesweeper";
     
     enum SpaceSymbol {

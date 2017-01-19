@@ -38,6 +38,22 @@ public class ServerMain {
 
     public static void main(String[] args) {
         ServerMain server = new ServerMain(SERVER_PORT);
+        
+        // Thread to send updates every second.
+        (new Thread() {
+        	public void run() {
+        		while (true) {
+	        		server.updateListeners("");
+	        		try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						Log.i(TAG, "Issue with thread sleep.");
+						e.printStackTrace();
+					}
+        		}
+        	}
+        }).start();
+
         server.waitForConnection();
     }
 
@@ -191,7 +207,7 @@ public class ServerMain {
 		}
     }
 
-    public void updateListeners(String cause) {
+    synchronized public void updateListeners(String cause) {
 
     	String jsonString = null;
     	try {

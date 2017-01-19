@@ -11,11 +11,11 @@ import time
 
 ROWS = 9
 COLS = 9
-WIDTH = 450
-HEIGHT = 450
+WIDTH = 900
+HEIGHT = 900
 COL_WIDTH = WIDTH // COLS
 ROW_HEIGHT = HEIGHT // ROWS
-BOTTOM = HEIGHT // 3
+BOTTOM = HEIGHT // 6
 screen = pygame.display.set_mode((WIDTH, HEIGHT + BOTTOM))
 pygame.init()
 font = pygame.font.SysFont("Times New Roman", 15)
