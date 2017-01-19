@@ -99,9 +99,12 @@ public class GameStateManager {
                 board[index] = jsonBoard.getString(index).charAt(0);
             }
             int mineCount = state.getInt("mineCount");
+            // TODO: generate uncoveredPercentage on the server, send in JSON
+            // int uncoveredPercentage = state.getInt("uncoveredPercentage");
+            int uncoveredPercentage = 30;
             String stringStatus = state.getString("status");
 
-            newGameState = new GameState(cause, time, board, mineCount, stringStatus);
+            newGameState = new GameState(cause, time, board, mineCount, uncoveredPercentage, stringStatus);
 
         } catch(JSONException e) {
             Log.e(TAG, "Error reading update payload: " + update, e);

@@ -229,7 +229,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler {
 
         mFlagsLeft = newGameState.getMineCount();
         mSecondsElapsed = newGameState.getSecondsElapsed();
-//        mUncoveredPercentage = newGameState.getUncoveredPercentage();
+        mUncoveredPercentage = newGameState.getUncoveredPercentage();
         mGameBegun = true;
         mGameStatus = newGameState.getStatus();
 
