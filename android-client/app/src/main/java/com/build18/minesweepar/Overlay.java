@@ -128,11 +128,12 @@ public class Overlay {
         System.loadLibrary("Overlay");
     }
 
-    public native Mat overlayTilesNative();
+    public native String overlayTilesNative();
 
     public Mat overlayTiles(Mat rawRGBA) {
 
-        Mat message = overlayTilesNative();
+//        Mat message = overlayTilesNative();
+        String message = overlayTilesNative();
 
         Log.i(TAG, message.toString());
 
