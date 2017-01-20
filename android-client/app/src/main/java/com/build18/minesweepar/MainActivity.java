@@ -113,7 +113,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
     private void updateUI() {
         mFlagsRemainingTextView.setText(mFlagsLeft+"");
         mTimeElapsedTextView.setText(mSecondsElapsed+"");
-        mUncoveredPercentageTextView.setText(mUncoveredPercentage+"");
+        mUncoveredPercentageTextView.setText(mUncoveredPercentage+" %");
 
         if (!mGameBegun) {
             mNewGameTitle.setText("Welcome to MinesweepAR!");
