@@ -173,7 +173,7 @@ void processs_detections(const TagDetectionArray& detections,
         );
 
         cv::Point2d avg(0, 0);
-        size_t to_include = std::max(1, point_distances.size() - 1);
+        size_t to_include = std::max((size_t)1, point_distances.size() - (size_t)1);
         for (int i = 0; i < to_include; ++i) {
           avg += point_distances[i].first;
         }
