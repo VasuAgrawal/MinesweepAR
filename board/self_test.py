@@ -4,6 +4,7 @@
 
 import numpy as np
 import pygame
+import serial
 
 ROWS = 9
 COLS = 9
@@ -29,12 +30,16 @@ def update_board():
             image = OPEN if board[row][col] else BLANK
             image = pygame.transform.scale(image, (COL_WIDTH, ROW_HEIGHT))
             screen.blit(image, rect)
+    pygame.display.update()
 
 def main():
-    with serial.Serial('dev/ttyACM0', 115200) as ser:
+    with serial.Serial('/dev/ttyACM0', 115200) as ser:
         update_board()
         while True:
             row = int(ser.read())
             col = int(ser.read())
             board[row][col] = 1
             update_board()
+
+if __name__ == "__main__":
+    main()

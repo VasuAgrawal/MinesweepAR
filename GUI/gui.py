@@ -27,6 +27,11 @@ MARKED_MINE = "M"
 UNMARKED_MINE = "?"
 BAD_MARK = "&"
 
+SERVER_IP = "128.237.198.232"
+
+SERVER_PORT = 8000
+
+
 images = dict()
 images[BLANK] = pygame.image.load("../Images/facingDown.png")
 images[MARKED] = pygame.image.load("../Images/flagged.png")
@@ -86,7 +91,7 @@ def data_read():
         # First set up the socket by sending the correct payload.
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect(("localhost", 8000))
+            s.connect((SERVER_IP, SERVER_PORT))
             logging.info("Connected to the server!")
 
             out = dict()
@@ -143,7 +148,7 @@ def data_write():
         print(payload)
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect(("localhost", 8000))
+            s.connect((SERVER_IP, SERVER_PORT))
             s.send(payload.encode('ascii'))
             s.close()
         except ConnectionRefusedError:
