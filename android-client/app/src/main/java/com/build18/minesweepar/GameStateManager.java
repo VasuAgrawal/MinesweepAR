@@ -87,6 +87,9 @@ public class GameStateManager {
     }
 
     private void updateGameState(String update) {
+        if(update == null) {
+            return;
+        }
 
         GameState newGameState = null;
         try {
