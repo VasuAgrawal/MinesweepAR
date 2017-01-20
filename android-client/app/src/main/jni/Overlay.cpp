@@ -57,8 +57,8 @@ inline double IN2M(double x) {
 
 void processs_detections(const TagDetectionArray& detections,
                          const cv::Point2d opticalCenter, cv::Mat* frame, jint * body) {
-    static double s = .1540; // tag size in meters
-    static double ss = 1.5 * s; // half tag size in meters
+    static double s = IN2M(6 * .8); // tag size in meters
+    static double ss = IN2M(7.5);
     static double f = 500;
 
     cv::Mat K = (cv::Mat_<double>(3, 3) <<
@@ -67,88 +67,129 @@ void processs_detections(const TagDetectionArray& detections,
             0, 0, 1
     );
 
+    static cv::Mat basic_corners = (cv::Mat_<double>(4, 3) <<
+            -ss,  ss, 0,
+            ss,  ss, 0,
+            ss, -ss, 0,
+            -ss, -ss, 0
+
+
+
+    );
+
     // Shouldn't usually be static, but it's set to zeros always.
     static cv::Mat_<double> distCoeffs = cv::Mat_<double>::zeros(4,1);
-    std::vector<std::vector<cv::Point2d>> all_frame_points;
 
-
-    std::vector<size_t> detected_ids;
+    std::vector<cv::Point2d> frame_points;
     for (const auto& detection : detections) {
         if (!detection.good) continue;
-        // First, we get the homography from the april tag.
+        int i = (int)detection.id;
         cv::Mat r, t; // Rotation and translation matrices
         CameraUtil::homographyToPoseCV(f, f, s, detection.homography, r, t);
 
-        // The offset to apply to the entire set of corner points. Essentially,
-        // we're shifting the grid to be centered on the center of the current april
-        // tag.
-        auto offset = tile_offsets[detection.id];
-        auto corners(corners_all);
-        for (auto& corner : corners) {
-            corner -= offset;
-        }
+        // From the homography that was calculated earlier, figure out the four
+        // corners of the tile.
+        cv::projectPoints(basic_corners, r, t, K, distCoeffs, frame_points);
 
-        // Project the corners of the ENTIRE TILE (16" x 16") into frame points,
-        // which are image coordinates. These image coordinates then need to get
-        // saved and eventually averaged.
-        std::vector<cv::Point2d> frame_points;
-        cv::projectPoints(corners, r, t, K, distCoeffs, frame_points);
-        all_frame_points.push_back(frame_points);
-        detected_ids.push_back(detection.id);
-    }
+        cv::Mat H = cv::findHomography(tile_points, frame_points, 0);
 
-    // Now we have a vector of vectors, containing a bunch of theoretical frame
-    // points. They need to all be averaged together and distilled into a single
-    // vector.
-    std::vector<cv::Point2d> frame_points;
-    for (int i = 0; i < corners_all.size(); ++i) {
-        cv::Point2d current_point(0, 0);
 
-        for (int j = 0; j < all_frame_points.size(); ++j) {
-            current_point += all_frame_points[j][i];
-        }
 
-        //Push back the average of all of the points.
-        frame_points.push_back(current_point / (double)all_frame_points.size());
-    }
-
-    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Finished averaging all of the points");
-
-//    for (int i = 0; i < tile_offsets.size(); ++i) {
-//    for (int i = 0; i < 2; ++i) {
-    for (auto id : detected_ids) {
-        int i = (int)id;
-        std::vector<cv::Point2d>::const_iterator begin = (
-                frame_points.begin() + i * 4);
-        std::vector<cv::Point2d>::const_iterator end = (
-                frame_points.begin() + (i + 1) * 4);
-        std::vector<cv::Point2d> points(begin, end);
-
-        // Find a mapping from the full tile to the image coordindates that the
-        // warped image is supposed to be at.
-        cv::Mat H = cv::findHomography(tile_points, points, 0);
-
-        // Finally, wth the warp calculated above, warp the actual image.
-        cv::Mat tile_warped;
-        cv::Mat mask_warped;
         if (H.rows == 3 && H.cols == 3) {
             if(body[i] < 0 || body[i] > 12) {
                 __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Bad Body Value");
             } else {
-                Tile t = Tile(body[i]);
-
+                cv::Mat tile_warped;
+                cv::Mat mask_warped;
                 cv::warpPerspective(tile_images[Tile(body[i])], tile_warped, H,
                                     frame->size());
                 cv::warpPerspective(tile_mask, mask_warped, H, frame->size());
                 tile_warped.copyTo(*frame, mask_warped);
             }
-
         } else {
             __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Homography matrix is wrong?");
         }
-//        tile_warped.copyTo(*tile_addr, mask_warped);
-//        mask_warped.copyTo(*mask_addr, mask_warped);
     }
+
+//    std::vector<std::vector<cv::Point2d>> all_frame_points;
+//    std::vector<size_t> detected_ids;
+//    for (const auto& detection : detections) {
+//        if (!detection.good) continue;
+//
+//        // First, we get the homography from the april tag.
+//        cv::Mat r, t; // Rotation and translation matrices
+//        CameraUtil::homographyToPoseCV(f, f, s, detection.homography, r, t);
+//
+//        // The offset to apply to the entire set of corner points. Essentially,
+//        // we're shifting the grid to be centered on the center of the current april
+//        // tag.
+//        auto offset = tile_offsets[detection.id];
+//        auto corners(corners_all);
+//        for (auto& corner : corners) {
+//            corner -= offset;
+//        }
+//
+//        // Project the corners of the ENTIRE TILE (16" x 16") into frame points,
+//        // which are image coordinates. These image coordinates then need to get
+//        // saved and eventually averaged.
+//        std::vector<cv::Point2d> frame_points;
+//        cv::projectPoints(corners, r, t, K, distCoeffs, frame_points);
+//        all_frame_points.push_back(frame_points);
+//        detected_ids.push_back(detection.id);
+//    }
+//
+//    // Now we have a vector of vectors, containing a bunch of theoretical frame
+//    // points. They need to all be averaged together and distilled into a single
+//    // vector.
+//    std::vector<cv::Point2d> frame_points;
+//    for (int i = 0; i < corners_all.size(); ++i) {
+//        cv::Point2d current_point(0, 0);
+//
+//        for (int j = 0; j < all_frame_points.size(); ++j) {
+//            current_point += all_frame_points[j][i];
+//        }
+//
+//        //Push back the average of all of the points.
+//        frame_points.push_back(current_point / (double)all_frame_points.size());
+//    }
+//
+//    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Finished averaging all of the points");
+//
+////    for (int i = 0; i < tile_offsets.size(); ++i) {
+////    for (int i = 0; i < 2; ++i) {
+//    for (auto id : detected_ids) {
+//        int i = (int)id;
+//        std::vector<cv::Point2d>::const_iterator begin = (
+//                frame_points.begin() + i * 4);
+//        std::vector<cv::Point2d>::const_iterator end = (
+//                frame_points.begin() + (i + 1) * 4);
+//        std::vector<cv::Point2d> points(begin, end);
+//
+//        // Find a mapping from the full tile to the image coordindates that the
+//        // warped image is supposed to be at.
+//        cv::Mat H = cv::findHomography(tile_points, points, 0);
+//
+//        // Finally, wth the warp calculated above, warp the actual image.
+//        cv::Mat tile_warped;
+//        cv::Mat mask_warped;
+//        if (H.rows == 3 && H.cols == 3) {
+//            if(body[i] < 0 || body[i] > 12) {
+//                __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Bad Body Value");
+//            } else {
+//                Tile t = Tile(body[i]);
+//
+//                cv::warpPerspective(tile_images[Tile(body[i])], tile_warped, H,
+//                                    frame->size());
+//                cv::warpPerspective(tile_mask, mask_warped, H, frame->size());
+//                tile_warped.copyTo(*frame, mask_warped);
+//            }
+//
+//        } else {
+//            __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Homography matrix is wrong?");
+//        }
+////        tile_warped.copyTo(*tile_addr, mask_warped);
+////        mask_warped.copyTo(*mask_addr, mask_warped);
+//    }
     __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Finished warping all of the images");
 }
 

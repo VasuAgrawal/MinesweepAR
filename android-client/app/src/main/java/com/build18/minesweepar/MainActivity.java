@@ -148,7 +148,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             return;
         }
 
-        mOpenCvCameraView.setMaxFrameSize(720, 480);
+        mOpenCvCameraView.setMaxFrameSize(500, 500);
         mOpenCvCameraView.enableView();
 
 
@@ -365,6 +365,9 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             case ' ': return Overlay.Tile.BLANK.getIndex();
             case '*': return Overlay.Tile.FLAG.getIndex();
             case 'X': return Overlay.Tile.MINE.getIndex();
+            case 'M': return Overlay.Tile.FLAG.getIndex();
+            case '?': return Overlay.Tile.MINE.getIndex();
+            case '&': return Overlay.Tile.FLAG.getIndex();
         }
 
         Log.e(TAG, "Couldn't find a Tile type for " + gameState);
