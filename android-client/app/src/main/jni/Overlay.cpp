@@ -16,14 +16,14 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-//#include "apriltags/CameraUtil.h"
-//#include "apriltags/TagDetector.h"
+#include "CameraUtil.h"
+#include "TagDetector.h"
 
 JNIEXPORT jstring JNICALL Java_com_build18_minesweepar_Overlay_overlayTilesNative
         (JNIEnv * env, jobject) {
 
     cv::Mat frame;
-//    TagDetectorParams params;
+    TagDetectorParams params;
 
     double f = 500;
     double x = 30;

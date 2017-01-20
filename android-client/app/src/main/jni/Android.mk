@@ -10,5 +10,7 @@ include /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/nat
 
 LOCAL_MODULE := Overlay
 LOCAL_MODULE_FILENAME := libOverlay
-LOCAL_SRC_FILES := Overlay.cpp
+LOCAL_SRC_FILES := Overlay.cpp CameraUtil.cpp DebugImage.cpp Geometry.cpp GrayModel.cpp MathUtil.cpp
+LOCAL_SRC_FILES += Refine.cpp TagDetector.cpp TagFamily.cpp TagFamilies.cpp UnionFindSimple.cpp
+
 include $(BUILD_SHARED_LIBRARY)

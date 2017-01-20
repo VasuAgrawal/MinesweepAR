@@ -29,11 +29,11 @@ apply plugin: 'com.android.application'
                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             }
         }
-        externalNativeBuild {
-            cmake {
-                path '../../../apriltags/CMakeLists.txt'
-            }
-        }
+//        externalNativeBuild {
+//            cmake {
+//                path '../../../apriltags/CMakeLists.txt'
+//            }
+//        }
 
 
     }
