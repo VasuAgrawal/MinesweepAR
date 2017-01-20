@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_build18_minesweepar_Overlay
  * Method:    overlayTilesNative
- * Signature: (J)V
+ * Signature: (J[I)V
  */
 JNIEXPORT void JNICALL Java_com_build18_minesweepar_Overlay_overlayTilesNative
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jobject, jlong, jintArray);
 
 /*
  * Class:     com_build18_minesweepar_Overlay

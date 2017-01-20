@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.Point;
@@ -20,7 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.opencv.core.CvType.CV_64FC1;
+import static org.opencv.core.CvType.CV_8SC3;
+import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.core.CvType.CV_8UC1;
+import static org.opencv.core.CvType.CV_8UC3;
 
 /**
  * Created by Reid on 1/19/17.
@@ -30,8 +34,8 @@ public class Overlay {
     private static final String TAG = "Overlay";
 
     public enum Tile {
-        BLANK(0), ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8),
-        MINE(9), FLAG(10);
+        ZERO(0), ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8),
+        MINE(9), FLAG(10), BLANK(11);
 
         private int index;
 
@@ -54,7 +58,7 @@ public class Overlay {
         System.loadLibrary("Overlay");
     }
 
-    public native void overlayTilesNative(long matPointer);
+    public native void overlayTilesNative(long matPointer, int[] boardState);
     public native void setupOverlayNative(String[] imageResources);
 
 
@@ -65,11 +69,15 @@ public class Overlay {
         setupOverlayNative(imageResources);
     }
 
-    public Mat overlayTiles(Mat rawRGBA) {
+    public Mat overlayTiles(Mat rawRGBA, int[] gameState) {
 
         Log.d(TAG, "Calling overlay");
-        overlayTilesNative(rawRGBA.getNativeObjAddr());
 
+        overlayTilesNative(rawRGBA.getNativeObjAddr(), gameState);
+
+        Log.d(TAG, rawRGBA.toString());
+
+//        tiles.copyTo(rawRGBA, mask);
         return rawRGBA;
     }
 }

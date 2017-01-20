@@ -16,13 +16,16 @@ public class GameState {
 
     private final String cause;
     private final int seconds;
-    private final char[] board;
+    public final char[] board;
     private final int mineCount;
     private final int uncoveredPercentage;
     private final GameStatus status;
     private final int size;
 
     public GameState(String cause, int seconds, char[] board, int mineCount, int uncoveredPercentage, String status) {
+        if(board == null) {
+            Log.d(TAG, "No board when creating game state?");
+        }
         this.cause = cause;
         this.seconds = seconds;
         this.board = board;

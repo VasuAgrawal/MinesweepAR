@@ -147,12 +147,18 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             requestCameraPermission();
             return;
         }
+
+        mOpenCvCameraView.setMaxFrameSize(720, 480);
         mOpenCvCameraView.enableView();
+
+
     }
 
     private void stopCamera() {
         if(mOpenCvCameraView != null) {
+
             mOpenCvCameraView.disableView();
+
         }
     }
 
@@ -315,7 +321,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
         String[] imageResources = new String[Overlay.Tile.values().length];
 
-        getImagePath(imageResources, R.drawable.blank, Overlay.Tile.BLANK);
+        getImagePath(imageResources, R.drawable.zero, Overlay.Tile.ZERO);
         getImagePath(imageResources, R.drawable.one, Overlay.Tile.ONE);
         getImagePath(imageResources, R.drawable.two, Overlay.Tile.TWO);
         getImagePath(imageResources, R.drawable.three, Overlay.Tile.THREE);
@@ -326,6 +332,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         getImagePath(imageResources, R.drawable.eight, Overlay.Tile.EIGHT);
         getImagePath(imageResources, R.drawable.flag, Overlay.Tile.FLAG);
         getImagePath(imageResources, R.drawable.mine, Overlay.Tile.MINE);
+        getImagePath(imageResources, R.drawable.blank, Overlay.Tile.BLANK);
 
         overlay.setupOverlay(imageResources);
 
@@ -336,14 +343,57 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
     }
 
+    enum SpaceSymbol {
+        BLANK(' '), MARKED('*'), MINE('X'), MARKED_MINE('M'), UNMARKED_MINE('?'), BAD_MARK('&');
+
+        private char symbol;
+        SpaceSymbol(char symbol) {
+            this.symbol = symbol;
+        }
+
+        public char getSymbol() {
+            return this.symbol;
+        }
+
+    }
+
+    private int mapToBoardState(char gameState) {
+        if(Character.isDigit(gameState)) {
+            return (int)(gameState - '0');
+        }
+        switch(gameState) {
+            case ' ': return Overlay.Tile.BLANK.getIndex();
+            case '*': return Overlay.Tile.FLAG.getIndex();
+            case 'X': return Overlay.Tile.MINE.getIndex();
+        }
+
+        Log.e(TAG, "Couldn't find a Tile type for " + gameState);
+        return -1;
+    }
+
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
         Mat rgba = inputFrame.rgba();
 
-        rgba = overlay.overlayTiles(rgba);
+        GameState gameState = mGameStateManager.getLatestGameState();
+        if(gameState == null) {
+            Log.d(TAG, "Game state not setup, skipping frame");
+            return rgba;
+        }
+        int[] boardState = new int[gameState.board.length];
 
-        Imgproc.line(rgba, new Point(5, 5), new Point(200, 200), new Scalar(255, 255, 0), 20);
+        for(int index = 0; index < boardState.length; index++) {
+            boardState[index] = mapToBoardState(gameState.board[index]);
+        }
+
+        Mat copiedMat = new Mat();
+        rgba.copyTo(copiedMat);
+
+        copiedMat = overlay.overlayTiles(copiedMat, boardState);
+
+        copiedMat.copyTo(rgba);
+
+//        Imgproc.line(rgba, new Point(5, 5), new Point(200, 200), new Scalar(255, 255, 0), 20);
 
         return rgba;
     }

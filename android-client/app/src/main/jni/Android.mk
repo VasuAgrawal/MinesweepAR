@@ -1,4 +1,5 @@
 LOCAL_PATH := $(call my-dir)
+LOCAL_LDLIBS := -llog
 
 include $(CLEAN_VARS)
 
