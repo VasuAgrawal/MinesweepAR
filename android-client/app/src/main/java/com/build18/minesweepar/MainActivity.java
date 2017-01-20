@@ -214,7 +214,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
         setContentView(R.layout.activity_main);
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.preview_view);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
