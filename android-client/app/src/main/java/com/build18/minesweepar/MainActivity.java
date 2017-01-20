@@ -280,7 +280,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         }
     };
 
-    private String getImagePath(String[] imageResources, int resourceId, Overlay.Tile t) {
+    private void getImagePath(String[] imageResources, int resourceId, Overlay.Tile t) {
 
         BitmapDrawable d = (BitmapDrawable)getResources().getDrawable(resourceId, null);
         Bitmap bitmap = d.getBitmap();
@@ -327,7 +327,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         getImagePath(imageResources, R.drawable.flag, Overlay.Tile.FLAG);
         getImagePath(imageResources, R.drawable.mine, Overlay.Tile.MINE);
 
-
+        overlay.setupOverlay(imageResources);
 
     }
 

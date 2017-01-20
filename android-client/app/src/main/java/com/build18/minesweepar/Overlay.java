@@ -58,21 +58,6 @@ public class Overlay {
     public native void setupOverlayNative(String[] imageResources);
 
 
-    private void copy(File src, File dest) throws IOException {
-        InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dest);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-    }
-
-
     public void setupOverlay(String[] imageResources) {
 
         Log.d(TAG, Arrays.toString(imageResources));
