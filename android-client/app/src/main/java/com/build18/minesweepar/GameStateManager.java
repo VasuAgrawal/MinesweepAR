@@ -30,7 +30,7 @@ public class GameStateManager {
     private GameState gameState;
     private GameStateChangedHandler handler;
 
-    private static final String SERVER_HOST = "192.168.1.62";
+    private static final String SERVER_HOST = "128.237.198.232";
     private static final int SERVER_PORT = 8000;
     private static final String TAG = "GameStateManager";
 
@@ -99,9 +99,8 @@ public class GameStateManager {
                 board[index] = jsonBoard.getString(index).charAt(0);
             }
             int mineCount = state.getInt("mineCount");
-            // TODO: generate uncoveredPercentage on the server, send in JSON
-            // int uncoveredPercentage = state.getInt("uncoveredPercentage");
-            int uncoveredPercentage = 30;
+            int hiddenCount = state.getInt("unOpenedCount");
+            int uncoveredPercentage = (int)((1 - (hiddenCount / (double)board.length)) * 100);
             String stringStatus = state.getString("status");
 
             newGameState = new GameState(cause, time, board, mineCount, uncoveredPercentage, stringStatus);

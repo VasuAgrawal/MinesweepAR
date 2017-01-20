@@ -22,8 +22,8 @@ enum Tile {
   SEVEN = 7,
   EIGHT = 8,
   BLANK = 0,
-  MINE = -1,
-  FLAG = -2,
+  MINE = 9,
+  FLAG = 10,
 };
 
 std::map<Tile, cv::Mat> tile_images;

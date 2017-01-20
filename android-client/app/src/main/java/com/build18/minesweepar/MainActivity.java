@@ -1,24 +1,16 @@
 package com.build18.minesweepar;
 
-
 import android.app.Activity;
-import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.SurfaceTexture;
-import android.graphics.ImageFormat;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.params.StreamConfigurationMap;
 import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
-import android.util.Size;
-import android.view.Surface;
-import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.core.Point;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -35,7 +26,11 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.Arrays;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.OverlappingFileLockException;
 
 public class MainActivity extends Activity implements GameStateChangedHandler, CameraBridgeViewBase.CvCameraViewListener2 {
 
@@ -51,10 +46,6 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
      * PRIVATE VARIABLES
      */
 
-//    private TextureView mTextureView;
-    private CameraDevice mCameraDevice;
-    private CameraCaptureSession mCameraCaptureSession;
-    private Size mPreviewSize;
     private GameStateManager mGameStateManager;
 
     private View mNewGameOverlay;
@@ -73,55 +64,11 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
+    private Overlay overlay;
+
     /*
      * PRIVATE CALLBACKS
      */
-
-    private TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
-        @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture,
-                                              int width, int height) {
-            Log.d(TAG, "Surface Texture Available");
-            // TODO: This was needed for some race condition with the camera that I don't understand
-            // @Andrew, please advise
-//            startCamera();
-        }
-
-        @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture,
-                                                int width, int height) {
-            return;
-        }
-
-        @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
-            return true;
-        }
-
-        @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-        }
-    };
-
-//    private CameraDevice.StateCallback mCameraDeviceCallback = new CameraDevice.StateCallback() {
-//        @Override
-//        public void onOpened(CameraDevice cameraDevice) {
-//            mCameraDevice = cameraDevice;
-//            previewCamera(cameraDevice);
-//        }
-//
-//        @Override
-//        public void onDisconnected(CameraDevice cameraDevice) {
-//            Log.d(TAG, "Camera disconnected.");
-//            cameraDevice.close();
-//        }
-//
-//        @Override
-//        public void onError(CameraDevice cameraDevice, int error) {
-//            Log.d(TAG, "Camera errored.");
-//            cameraDevice.close();
-//        }
-//    };
 
     private Button.OnClickListener mNewGameClickListener = new Button.OnClickListener() {
         @Override
@@ -166,7 +113,7 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
     private void updateUI() {
         mFlagsRemainingTextView.setText(mFlagsLeft+"");
         mTimeElapsedTextView.setText(mSecondsElapsed+"");
-        mUncoveredPercentageTextView.setText(mUncoveredPercentage+"");
+        mUncoveredPercentageTextView.setText(mUncoveredPercentage+" %");
 
         if (!mGameBegun) {
             mNewGameTitle.setText("Welcome to MinesweepAR!");
@@ -201,73 +148,20 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             requestCameraPermission();
             return;
         }
+
+        mOpenCvCameraView.setMaxFrameSize(500, 500);
         mOpenCvCameraView.enableView();
 
-//        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-//        try {
-//            String cameraID = manager.getCameraIdList()[0];
-//            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
-//            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-//            mPreviewSize = choosePreviewSize(map);
-//            manager.openCamera(cameraID, mCameraDeviceCallback, null);
-//        } catch (CameraAccessException e) {
-//            Toast.makeText(this, "Cannot access the camera.", Toast.LENGTH_SHORT).show();
-//        }
-    }
 
-//    private void previewCamera(CameraDevice cameraDevice) {
-//        SurfaceTexture previewTexture = mTextureView.getSurfaceTexture();
-//        previewTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-//        Surface previewSurface = new Surface(previewTexture);
-//
-//        final CaptureRequest.Builder previewBuilder;
-//        try {
-//            previewBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-//        } catch (CameraAccessException e) {
-//            Log.d(TAG, "Could not create capture request.");
-//            return;
-//        }
-//        previewBuilder.addTarget(previewSurface);
-//
-//        try {
-//            cameraDevice.createCaptureSession(Arrays.asList(previewSurface), new CameraCaptureSession.StateCallback() {
-//                @Override
-//                public void onConfigured(CameraCaptureSession cameraCaptureSession) {
-//                    mCameraCaptureSession = cameraCaptureSession;
-//                    try {
-//                        cameraCaptureSession.setRepeatingRequest(previewBuilder.build(), null, null);
-//                    } catch (CameraAccessException e) {
-//                        Log.d(TAG, "Could not set repeating request for frames.");
-//                        return;
-//                    }
-//                }
-//
-//                @Override
-//                public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
-//                    Log.d(TAG, "Configuring camera failed.");
-//                }
-//            }, null);
-//        } catch (CameraAccessException e) {
-//            Log.d(TAG, "Could not create capture session.");
-//        }
-//    }
+    }
 
     private void stopCamera() {
         if(mOpenCvCameraView != null) {
+
             mOpenCvCameraView.disableView();
+
         }
     }
-
-//    private Size choosePreviewSize(StreamConfigurationMap map) {
-//        Size sizes[] = map.getOutputSizes(ImageFormat.JPEG);
-//        for (Size s : sizes) {
-//            if (s.getWidth() == 864 && s.getHeight() == 480) {
-//                return s;
-//            }
-//        }
-//        Log.d(TAG, "Couldn't find the desired Size!");
-//        return sizes[0];
-//    }
 
     /*
      * GAME STATE
@@ -320,18 +214,16 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
         setContentView(R.layout.activity_main);
 
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.preview_view);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-//        mTextureView = (TextureView) findViewById(R.id.preview_view);
-//        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-
-
         // TODO: Load images for overlay
 
-        mNewGameOverlay = (View) findViewById(R.id.new_game_overlay);
-        mNewGameView = (View) findViewById(R.id.new_game_layout);
+        mNewGameOverlay = findViewById(R.id.new_game_overlay);
+        mNewGameView = findViewById(R.id.new_game_layout);
         mFlagsRemainingTextView = (TextView) findViewById(R.id.flags_remaining);
         mTimeElapsedTextView = (TextView) findViewById(R.id.time_elapsed);
         mUncoveredPercentageTextView = (TextView) findViewById(R.id.percent_uncovered);
@@ -365,12 +257,6 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
             Log.d(TAG, "Open CV Library found inside package, using it");
             openCVLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
-
-//        if (mTextureView.isAvailable()) {
-//            startCamera();
-//        } else {
-//            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-//        }
     }
 
     @Override
@@ -403,27 +289,119 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         }
     };
 
+    private void getImagePath(String[] imageResources, int resourceId, Overlay.Tile t) {
+
+        BitmapDrawable d = (BitmapDrawable)getResources().getDrawable(resourceId, null);
+        Bitmap bitmap = d.getBitmap();
+
+        File sdCardDirectory = Environment.getExternalStorageDirectory();
+        File image = new File(sdCardDirectory, t.getFilename());
+
+        // Encode the file as a PNG image.
+        FileOutputStream outStream;
+        try {
+
+            outStream = new FileOutputStream(image);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+        /* 100 to keep full quality of the image */
+
+            outStream.flush();
+            outStream.close();
+
+            imageResources[t.getIndex()] = image.getPath();
+
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "File Not Found", e);
+        } catch (IOException e) {
+            Log.e(TAG, "IO Exception", e);
+        }
+
+    }
+
     @Override
     public void onCameraViewStarted(int width, int height) {
-        // TODO: Do setup stuff for camera resources here
+        this.overlay = new Overlay();
+
+        String[] imageResources = new String[Overlay.Tile.values().length];
+
+        getImagePath(imageResources, R.drawable.zero, Overlay.Tile.ZERO);
+        getImagePath(imageResources, R.drawable.one, Overlay.Tile.ONE);
+        getImagePath(imageResources, R.drawable.two, Overlay.Tile.TWO);
+        getImagePath(imageResources, R.drawable.three, Overlay.Tile.THREE);
+        getImagePath(imageResources, R.drawable.four, Overlay.Tile.FOUR);
+        getImagePath(imageResources, R.drawable.five, Overlay.Tile.FIVE);
+        getImagePath(imageResources, R.drawable.six, Overlay.Tile.SIX);
+        getImagePath(imageResources, R.drawable.seven, Overlay.Tile.SEVEN);
+        getImagePath(imageResources, R.drawable.eight, Overlay.Tile.EIGHT);
+        getImagePath(imageResources, R.drawable.flag, Overlay.Tile.FLAG);
+        getImagePath(imageResources, R.drawable.mine, Overlay.Tile.MINE);
+        getImagePath(imageResources, R.drawable.blank, Overlay.Tile.BLANK);
+
+        overlay.setupOverlay(imageResources);
 
     }
 
     @Override
     public void onCameraViewStopped() {
-        // TODO: Release any resources created in onCameraViewStarted
+
+    }
+
+    enum SpaceSymbol {
+        BLANK(' '), MARKED('*'), MINE('X'), MARKED_MINE('M'), UNMARKED_MINE('?'), BAD_MARK('&');
+
+        private char symbol;
+        SpaceSymbol(char symbol) {
+            this.symbol = symbol;
+        }
+
+        public char getSymbol() {
+            return this.symbol;
+        }
+
+    }
+
+    private int mapToBoardState(char gameState) {
+        if(Character.isDigit(gameState)) {
+            return (int)(gameState - '0');
+        }
+        switch(gameState) {
+            case ' ': return Overlay.Tile.BLANK.getIndex();
+            case '*': return Overlay.Tile.FLAG.getIndex();
+            case 'X': return Overlay.Tile.MINE.getIndex();
+            case 'M': return Overlay.Tile.FLAG.getIndex();
+            case '?': return Overlay.Tile.MINE.getIndex();
+            case '&': return Overlay.Tile.FLAG.getIndex();
+        }
+
+        Log.e(TAG, "Couldn't find a Tile type for " + gameState);
+        return -1;
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat rgba = inputFrame.rgba();
 
-        Imgproc.line(rgba, new Point(5, 5), new Point(50, 50), new Scalar(255, 255, 0), 10);
+        GameState gameState = mGameStateManager.getLatestGameState();
+        if(gameState == null) {
+            Log.d(TAG, "Game state not setup, skipping frame");
+            return rgba;
+        }
+        int[] boardState = new int[gameState.board.length];
 
+        for(int index = 0; index < boardState.length; index++) {
+            boardState[index] = mapToBoardState(gameState.board[index]);
+        }
 
-        // TODO: Implement the overlay algorithm by modifying the rgba matrix
+        Mat copiedMat = new Mat();
+        rgba.copyTo(copiedMat);
 
+        copiedMat = overlay.overlayTiles(copiedMat, boardState);
+
+        copiedMat.copyTo(rgba);
+
+//        Imgproc.line(rgba, new Point(5, 5), new Point(200, 200), new Scalar(255, 255, 0), 20);
 
         return rgba;
     }
+
 }
