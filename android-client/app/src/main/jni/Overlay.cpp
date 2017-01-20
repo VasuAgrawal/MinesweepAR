@@ -19,50 +19,46 @@
 #include "CameraUtil.h"
 #include "TagDetector.h"
 
-JNIEXPORT jstring JNICALL Java_com_build18_minesweepar_Overlay_overlayTilesNative
-        (JNIEnv * env, jobject) {
+enum Tile {
+    ONE = 1,
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+    FIVE = 5,
+    SIX = 6,
+    SEVEN = 7,
+    EIGHT = 8,
+    BLANK = 0,
+    MINE = -1,
+    FLAG = -2,
+};
 
-    cv::Mat frame;
-    TagDetectorParams params;
+std::map<Tile, cv::Mat> tile_images;
+cv::Mat tile_mask;
+cv::Mat tile_points;
 
-    double f = 500;
-    double x = 30;
-    double y = 50;
+// We need to map the id to an offset from 0, 0. The origin, 0, 0, will be found
+// at the top left of the board. Numbers will increment across the board (across
+// a row).
+std::vector<cv::Point3d> tile_offsets;
+// All of the corners of the different tiles in the image, in the order:
+//       1 * * * * * 2
+//       * * * * * * *
+//       * * * * * * *
+//       4 * * * * * 3
+std::vector<cv::Point3d> corners_all;
 
-    cv::Mat K = (cv::Mat_<double>(3, 3) <<
-                 f, 0, x,
-            0, f, y,
-            0, 0, 1
-    );
+inline double IN2M(double x) {
+    return .0254 * x;
+}
 
+JNIEXPORT void JNICALL Java_com_build18_minesweepar_Overlay_overlayTilesNative
+        (JNIEnv *, jobject, jlong address) {
 
-
-//    char s[100];
-//    sprintf(s,"%d",K.dims);
-//
-//
-//    return env->NewStringUTF((std::string("Basic") + std::string(s)).c_str());
-
-
-    jmethodID cnstrctr;
-    jclass c = (*env)->FindClass(env, "com/test/DeviceId");
-        if (c == 0) {
-            printf("Find Class Failed.\n");
-         }else{
-            printf("Found class.\n");
-         }
-
-        cnstrctr = (*env)->GetMethodID(env, c, "<init>", "(Ljava/lang/String;[B)V");
-        if (cnstrctr == 0) {
-            printf("Find method Failed.\n");
-        }else {
-            printf("Found method.\n");
-        }
-
-        return (*env)->NewObject(env, c, cnstrctr, id, cache);
+    cv::Mat* pInputImage = (cv::Mat*)address;
 
 
-//    return K;
+
 
 
 }
