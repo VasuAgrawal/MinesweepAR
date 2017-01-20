@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
+            android:layout_centerHorizontal="true"
             android:padding="@dimen/overlay_side_margin"
             android:rotation="0">
 
@@ -165,22 +165,9 @@
         android:width="80dp"
         android:height="80dp"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="@dimen/overlay_side_margin"
-        android:layout_marginBottom="@dimen/overlay_nav_margin"
-        android:text="FLAG" />
-
-    <Button
-        android:id="@+id/map_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:width="80dp"
-        android:height="80dp"
-        android:layout_marginTop="@dimen/overlay_nav_margin"
-        android:layout_marginRight="@dimen/overlay_side_margin"
-        android:text="MAP"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-         />
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/overlay_side_margin"
+        android:layout_marginRight="@dimen/overlay_nav_margin"
+        android:background="@drawable/ic_flag_red_48dp"/>
 
 </RelativeLayout>
