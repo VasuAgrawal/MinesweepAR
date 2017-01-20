@@ -221,7 +221,8 @@ public class ServerMain {
                 .put("time", game.getTime())
                 .put("board", array)
                 .put("mineCount", game.getMineCount())
-                .put("status", game.getStatus().toString());
+                .put("status", game.getStatus().toString())
+                .put("unOpenedCount", game.getHiddenCount());
 
             jsonString = state.toString() + "\n";
     	} catch(JSONException e) {

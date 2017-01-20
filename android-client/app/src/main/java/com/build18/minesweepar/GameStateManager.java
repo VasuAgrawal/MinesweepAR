@@ -99,9 +99,8 @@ public class GameStateManager {
                 board[index] = jsonBoard.getString(index).charAt(0);
             }
             int mineCount = state.getInt("mineCount");
-            // TODO: generate uncoveredPercentage on the server, send in JSON
-            // int uncoveredPercentage = state.getInt("uncoveredPercentage");
-            int uncoveredPercentage = 30;
+            int hiddenCount = state.getInt("unOpenedCount");
+            int uncoveredPercentage = (int)((1 - (hiddenCount / (double)board.length)) * 100);
             String stringStatus = state.getString("status");
 
             newGameState = new GameState(cause, time, board, mineCount, uncoveredPercentage, stringStatus);

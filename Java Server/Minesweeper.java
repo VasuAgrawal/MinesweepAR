@@ -59,6 +59,10 @@ public class Minesweeper {
         return state;
 
     }
+    
+    public int getHiddenCount() {
+        return this.hiddenSpaces;
+    }
 
     public void markMine(int row, int column) {
     	if(state != State.IN_GAME) {
