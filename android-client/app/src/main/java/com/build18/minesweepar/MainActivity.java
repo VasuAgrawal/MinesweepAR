@@ -1,6 +1,7 @@
 package com.build18.minesweepar;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.Manifest;
 import android.graphics.Bitmap;
@@ -212,6 +213,8 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_main);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.preview_view);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
