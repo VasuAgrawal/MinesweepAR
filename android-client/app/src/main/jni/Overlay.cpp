@@ -12,6 +12,7 @@
 #include <string>
 #include <cstdio>
 #include <android/log.h>
+#include <algorithm>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -143,14 +144,50 @@ void processs_detections(const TagDetectionArray& detections,
     // vector.
     std::vector<cv::Point2d> frame_points;
     for (int i = 0; i < corners_all.size(); ++i) {
-        cv::Point2d current_point(0, 0);
 
+        // Make a vector of all of the points
+        std::vector<cv::Point2d> points;
         for (int j = 0; j < all_frame_points.size(); ++j) {
-            current_point += all_frame_points[j][i];
+            points.push_back(all_frame_points[j][i]);
         }
 
-        //Push back the average of all of the points.
-        frame_points.push_back(current_point / (double)all_frame_points.size());
+        // As it turns out, finding outliers is, in general, a nontrivial
+        // problem. To deal with this, we can compute the pairwise distances
+        // between each point, and then throw away at most 2 points which are
+        // the furthest away from everything.
+        std::vector<std::pair<cv::Point2d, double>> point_distances;
+        for (const auto& point1 : points) { // First point
+          double distance = 0;
+          for (const auto& point2 : points) { // Point to compare with
+            distance += cv::norm(point2 - point1);
+          }
+          point_distances.push_back(std::pair<cv::Point2d, double>(point1, 
+                distance));
+        }
+
+        std::sort(point_distances.begin(), point_distances.end(), 
+            [](const std::pair<cv::Point2d, double>& lhs, 
+              const std::pair<cv::Point2d, double>& rhs) {
+                return lhs.second < rhs.second;
+            }
+        );
+
+        cv::Point2d avg(0, 0);
+        size_t to_include = std::max(1, point_distances.size() - 1);
+        for (int i = 0; i < to_include; ++i) {
+          avg += point_distances[i].first;
+        }
+
+        frame_points.push_back(avg / (double)to_include);
+
+        //cv::Point2d current_point(0, 0);
+
+        //for (int j = 0; j < all_frame_points.size(); ++j) {
+            //current_point += all_frame_points[j][i];
+        //}
+
+        ////Push back the average of all of the points.
+        //frame_points.push_back(current_point / (double)all_frame_points.size());
     }
 
     __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Finished averaging all of the points");
