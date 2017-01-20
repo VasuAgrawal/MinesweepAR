@@ -3,7 +3,12 @@ package com.build18.minesweepar;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,6 +24,12 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.OverlappingFileLockException;
 
 public class MainActivity extends Activity implements GameStateChangedHandler, CameraBridgeViewBase.CvCameraViewListener2 {
 
@@ -269,17 +280,60 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         }
     };
 
+    private String getImagePath(String[] imageResources, int resourceId, Overlay.Tile t) {
+
+        BitmapDrawable d = (BitmapDrawable)getResources().getDrawable(resourceId, null);
+        Bitmap bitmap = d.getBitmap();
+
+        File sdCardDirectory = Environment.getExternalStorageDirectory();
+        File image = new File(sdCardDirectory, t.getFilename());
+
+        // Encode the file as a PNG image.
+        FileOutputStream outStream;
+        try {
+
+            outStream = new FileOutputStream(image);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+        /* 100 to keep full quality of the image */
+
+            outStream.flush();
+            outStream.close();
+
+            imageResources[t.getIndex()] = image.getPath();
+
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "File Not Found", e);
+        } catch (IOException e) {
+            Log.e(TAG, "IO Exception", e);
+        }
+
+    }
+
     @Override
     public void onCameraViewStarted(int width, int height) {
         this.overlay = new Overlay();
+
+        String[] imageResources = new String[Overlay.Tile.values().length];
+
+        getImagePath(imageResources, R.drawable.blank, Overlay.Tile.BLANK);
+        getImagePath(imageResources, R.drawable.one, Overlay.Tile.ONE);
+        getImagePath(imageResources, R.drawable.two, Overlay.Tile.TWO);
+        getImagePath(imageResources, R.drawable.three, Overlay.Tile.THREE);
+        getImagePath(imageResources, R.drawable.four, Overlay.Tile.FOUR);
+        getImagePath(imageResources, R.drawable.five, Overlay.Tile.FIVE);
+        getImagePath(imageResources, R.drawable.six, Overlay.Tile.SIX);
+        getImagePath(imageResources, R.drawable.seven, Overlay.Tile.SEVEN);
+        getImagePath(imageResources, R.drawable.eight, Overlay.Tile.EIGHT);
+        getImagePath(imageResources, R.drawable.flag, Overlay.Tile.FLAG);
+        getImagePath(imageResources, R.drawable.mine, Overlay.Tile.MINE);
+
+
 
     }
 
     @Override
     public void onCameraViewStopped() {
-        if(this.overlay != null) {
-            overlay.release();
-        }
+
     }
 
     @Override
@@ -294,10 +348,4 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
         return rgba;
     }
 
-//    // new code
-//    static {
-//        System.loadLibrary("overlay-jni");
-//    }
-//    public native String getMsgFromJni();
-//    // new code done
 }

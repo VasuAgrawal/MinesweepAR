@@ -52,13 +52,161 @@ inline double IN2M(double x) {
     return .0254 * x;
 }
 
+void processs_detections(const TagDetectionArray& detections,
+                         const cv::Point2d opticalCenter, cv::Mat* frame) {
+    static double s = .1540; // tag size in meters
+    static double ss = 1.5 * s; // half tag size in meters
+    static double f = 500;
+
+    cv::Mat K = (cv::Mat_<double>(3, 3) <<
+                 f, 0, opticalCenter.x,
+            0, f, opticalCenter.y,
+            0, 0, 1
+    );
+
+    // Shouldn't usually be static, but it's set to zeros always.
+    static cv::Mat_<double> distCoeffs = cv::Mat_<double>::zeros(4,1);
+    std::vector<std::vector<cv::Point2d>> all_frame_points;
+
+    for (const auto& detection : detections) {
+        if (!detection.good) continue;
+        // First, we get the homography from the april tag.
+        cv::Mat r, t; // Rotation and translation matrices
+        CameraUtil::homographyToPoseCV(f, f, s, detection.homography, r, t);
+
+        // The offset to apply to the entire set of corner points. Essentially,
+        // we're shifting the grid to be centered on the center of the current april
+        // tag.
+        auto offset = tile_offsets[detection.id];
+        auto corners(corners_all);
+        for (auto& corner : corners) {
+            corner -= offset;
+        }
+
+        // Project the corners of the ENTIRE TILE (16" x 16") into frame points,
+        // which are image coordinates. These image coordinates then need to get
+        // saved and eventually averaged.
+        std::vector<cv::Point2d> frame_points;
+        cv::projectPoints(corners, r, t, K, distCoeffs, frame_points);
+        all_frame_points.push_back(frame_points);
+    }
+
+    // Now we have a vector of vectors, containing a bunch of theoretical frame
+    // points. They need to all be averaged together and distilled into a single
+    // vector.
+    std::vector<cv::Point2d> frame_points;
+    for (int i = 0; i < corners_all.size(); ++i) {
+        cv::Point2d current_point(0, 0);
+
+        for (int j = 0; j < all_frame_points.size(); ++j) {
+            current_point += all_frame_points[j][i];
+        }
+
+        //Push back the average of all of the points.
+        frame_points.push_back(current_point / (double)all_frame_points.size());
+    }
+
+    for (int i = 0; i < 2; ++i) {
+        std::vector<cv::Point2d>::const_iterator begin = (
+                frame_points.begin() + i * 4);
+        std::vector<cv::Point2d>::const_iterator end = (
+                frame_points.begin() + (i + 1) * 4);
+        std::vector<cv::Point2d> points(begin, end);
+
+        // Find a mapping from the full tile to the image coordindates that the
+        // warped image is supposed to be at.
+        cv::Mat H = cv::findHomography(tile_points, points, 0);
+
+        // Finally, wth the warp calculated above, warp the actual image.
+        cv::Mat tile_warped;
+        cv::Mat mask_warped;
+        cv::warpPerspective(tile_images[Tile(i % 8)], tile_warped, H,
+                            frame->size());
+        cv::warpPerspective(tile_mask, mask_warped, H, frame->size());
+        tile_warped.copyTo(*frame, mask_warped);
+    }
+}
+
+
 JNIEXPORT void JNICALL Java_com_build18_minesweepar_Overlay_overlayTilesNative
         (JNIEnv *, jobject, jlong address) {
 
-    cv::Mat* pInputImage = (cv::Mat*)address;
+    cv::Mat* frame = (cv::Mat*)address;
 
+    TagDetectorParams params;
+    params.segDecimate = true;
+    params.segSigma = .8;
+    params.thetaThresh = 100.0;
+    params.magThresh = 1200.0;
+    params.adaptiveThresholdValue = 5;
+    params.adaptiveThresholdRadius = 9;
+    params.refineBad = false;
+    params.refineQuads = true;
+    params.newQuadAlgorithm = false;
 
+    TagFamily family("Tag36h11");
+    TagDetector detector(family, params);
+    TagDetectionArray detections;
 
+    cv::Point2d opticalCenter(frame->cols * .5, frame->rows * .5);
+    detector.process(*frame, opticalCenter, detections); // Grab detections
 
+    // This should add the overlay from just this tile onto the frame
+    processs_detections(detections, opticalCenter, frame);
+
+}
+
+JNIEXPORT void JNICALL Java_com_build18_minesweepar_Overlay_setupOverlayNative
+        (JNIEnv *env, jobject, jobjectArray stringArray) {
+
+    int stringCount = env->GetArrayLength(stringArray);
+
+    for (int i = 0; i < stringCount; i++) {
+        jstring string = (jstring) (env->GetObjectArrayElement(stringArray, i));
+        const char *rawString = env->GetStringUTFChars(string, 0);
+        tile_images[(Tile)i] = cv::imread(rawString, CV_LOAD_IMAGE_COLOR);
+
+        env->ReleaseStringUTFChars(string, rawString);
+    }
+
+    const size_t tile_width = tile_images[BLANK].cols;
+    const size_t tile_height = tile_images[BLANK].rows;
+
+    tile_points = (cv::Mat_<double>(4, 2) <<
+                   0.0f, 0.0f,
+            tile_width, 0.0f,
+            tile_width, tile_height,
+            0.0f, tile_height
+    );
+
+    // All the tiles have the same mask, so it can be generated once.
+    tile_mask = cv::Mat(tile_images[BLANK].size(), CV_8U, cv::Scalar(255));
+
+    const double row_width = 16; // inches
+    const double col_height = 16; // inches
+    auto top_left = cv::Point3d(IN2M(-col_height / 2), IN2M(row_width/ 2), 0);
+    auto top_right = cv::Point3d(IN2M(col_height/ 2), IN2M(row_width/ 2), 0);
+    auto bot_right = cv::Point3d(IN2M(col_height/ 2), IN2M(-row_width/ 2), 0);
+    auto bot_left = cv::Point3d(IN2M(-col_height/ 2), IN2M(-row_width/ 2), 0);
+
+    for (int row = 0; row < 1; ++row) {
+        for (int col = 0; col < 2; ++col) {
+            // Find the center of each tile, in a global coordinate space. The center
+            // of the tile is treated as (0, 0) for the local coordinate frame, so all
+            // of the points need to be translated to be relative to that origin,
+            // which is why the center is being added to tile_offsets.
+            auto center = cv::Point3d(IN2M(col * col_height + col_height / 2),
+                                      IN2M(row * row_width + row_width / 2), IN2M(0));
+            tile_offsets.push_back(center);
+            std::cout << "Center: " << center << std::endl;
+
+            // We push the global corner points in the order specified above onto
+            // corners_all to get points to project later.
+            corners_all.push_back(center + top_left);
+            corners_all.push_back(center + top_right);
+            corners_all.push_back(center + bot_right);
+            corners_all.push_back(center + bot_left);
+        }
+    }
 
 }

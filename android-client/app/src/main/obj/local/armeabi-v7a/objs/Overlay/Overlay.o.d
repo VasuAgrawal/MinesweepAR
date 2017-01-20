@@ -28,7 +28,6 @@
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/fast_math.hpp \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/types.hpp \
   /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/cfloat \
-  /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/limits \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/mat.hpp \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/bufferpool.hpp \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/mat.inl.hpp \
@@ -57,7 +56,11 @@
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/affine.hpp \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/calib3d/calib3d_c.h \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/imgproc/imgproc.hpp \
-  /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/imgproc.hpp
+  /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/imgproc.hpp \
+  jni/CameraUtil.h jni/AprilTypes.h \
+  /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/core.hpp \
+  jni/TagDetector.h jni/Geometry.h jni/TagFamily.h jni/TagDetection.h \
+  jni/Refine.h jni/Profiler.h
 
 jni/com_build18_minesweepar_Overlay.h:
 
@@ -117,8 +120,6 @@ jni/com_build18_minesweepar_Overlay.h:
 
 /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/cfloat:
 
-/Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/limits:
-
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/mat.hpp:
 
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/bufferpool.hpp:
@@ -176,3 +177,21 @@ jni/com_build18_minesweepar_Overlay.h:
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/imgproc/imgproc.hpp:
 
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/imgproc.hpp:
+
+jni/CameraUtil.h:
+
+jni/AprilTypes.h:
+
+/Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/core.hpp:
+
+jni/TagDetector.h:
+
+jni/Geometry.h:
+
+jni/TagFamily.h:
+
+jni/TagDetection.h:
+
+jni/Refine.h:
+
+jni/Profiler.h:

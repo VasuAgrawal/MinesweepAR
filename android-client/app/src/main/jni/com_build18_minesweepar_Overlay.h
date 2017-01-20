@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_build18_minesweepar_Overlay_overlayTilesNative
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     com_build18_minesweepar_Overlay
+ * Method:    setupOverlayNative
+ * Signature: ([Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_build18_minesweepar_Overlay_setupOverlayNative
+  (JNIEnv *, jobject, jobjectArray);
+
 #ifdef __cplusplus
 }
 #endif
