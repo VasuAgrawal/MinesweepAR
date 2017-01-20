@@ -128,13 +128,13 @@ public class Overlay {
         System.loadLibrary("Overlay");
     }
 
-    public native String overlayTilesNative();
+    public native Mat overlayTilesNative();
 
     public Mat overlayTiles(Mat rawRGBA) {
 
-        String message = overlayTilesNative();
+        Mat message = overlayTilesNative();
 
-        Log.i(TAG, message);
+        Log.i(TAG, message.toString());
 
 //        Point opticalCenter = new Point(rawRGBA.cols() * .5, rawRGBA.rows() * .5);
 //        List<TagDetection> detections = tagDetector.process(rawRGBA, opticalCenter);
