@@ -310,4 +310,11 @@ public class MainActivity extends Activity implements GameStateChangedHandler, C
 
         return rgba;
     }
+
+//    // new code
+//    static {
+//        System.loadLibrary("overlay-jni");
+//    }
+//    public native String getMsgFromJni();
+//    // new code done
 }
