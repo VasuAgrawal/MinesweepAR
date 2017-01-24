@@ -4,6 +4,7 @@
   /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/vector \
   /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/map \
   /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/cstdio \
+  /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/algorithm \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/highgui/highgui.hpp \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/highgui.hpp \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core.hpp \
@@ -14,7 +15,6 @@
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/base.hpp \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/opencv_modules.hpp \
   /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/climits \
-  /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/algorithm \
   /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/cvstd.hpp \
   /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/cstring \
   /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/cctype \
@@ -72,6 +72,8 @@ jni/com_build18_minesweepar_Overlay.h:
 
 /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/cstdio:
 
+/Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/algorithm:
+
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/highgui/highgui.hpp:
 
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/highgui.hpp:
@@ -91,8 +93,6 @@ jni/com_build18_minesweepar_Overlay.h:
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/opencv_modules.hpp:
 
 /Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/climits:
-
-/Users/Reid/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/algorithm:
 
 /Users/Reid/Developer/CMU/Build18/MinesweepAR/OpenCV-android-sdk/sdk/native/jni/include/opencv2/core/cvstd.hpp:
 

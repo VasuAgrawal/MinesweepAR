@@ -30,7 +30,7 @@ public class GameStateManager {
     private GameState gameState;
     private GameStateChangedHandler handler;
 
-    private static final String SERVER_HOST = "128.237.198.232";
+    private static final String SERVER_HOST = "128.237.195.41";
     private static final int SERVER_PORT = 8000;
     private static final String TAG = "GameStateManager";
 
@@ -87,6 +87,9 @@ public class GameStateManager {
     }
 
     private void updateGameState(String update) {
+        if(update == null) {
+            return;
+        }
 
         GameState newGameState = null;
         try {
