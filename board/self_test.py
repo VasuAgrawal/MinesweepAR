@@ -38,6 +38,7 @@ def main():
         while True:
             row = int(ser.read())
             col = int(ser.read())
+            print("Found row %d col %d" % (row, col))
             board[row][col] = 1
             update_board()
 

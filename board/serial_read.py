@@ -7,6 +7,9 @@ import json
 import socket
 import logging
 
+SERVER = "128.237.195.41"
+PORT = 8000
+
 # Since the inputs should be coming in fairly slowly, a new connection is going
 # to be opened for every single keypress.
 def main():
@@ -18,7 +21,7 @@ def main():
 
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect(("localhost", 8000))
+                s.connect((SERVER, PORT))
 
                 out = dict()
                 out['type'] = 'KEY_PRESS'
